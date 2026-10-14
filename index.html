@@ -244,6 +244,29 @@ select.input{padding-right:34px;background-image:url("data:image/svg+xml,%3Csvg 
 footer{margin-top:26px;text-align:center;font-size:12.5px;color:var(--ink-2);line-height:1.8}
 footer a{color:var(--ink)}
 
+/* ---------- Apple Pay 帶入、帳單匯入 ---------- */
+.prefill{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:14px;padding:10px 14px;border:2.5px solid var(--ink);border-radius:var(--r);background:var(--coral-l);font-size:15px}
+.prefill b{font-weight:400}
+.steps{margin:0;padding-left:20px;line-height:1.7}
+.url-box{margin-top:10px;padding:8px 12px;border:2.5px dashed var(--ink);border-radius:var(--r-sm);background:var(--card);font-size:13px;word-break:break-all;user-select:all}
+.imp-map{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px}
+.imp-map .input,.imp-opts .input{min-height:40px;padding:6px 30px 6px 10px;font-size:14px}
+.imp-opts{display:grid;grid-template-columns:1fr 1fr;gap:8px 10px;align-items:end}
+.imp-opts .span2{grid-column:1/-1}
+@media (min-width:900px){.imp-opts{grid-template-columns:1fr 2fr}.imp-opts .span2{grid-column:auto}}
+.imp-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:14px 2px 6px;font-size:14px}
+.imp-list{max-height:44vh;overflow:auto;border:2.5px solid var(--ink);border-radius:var(--r);background:var(--card)}
+.imp-row{display:grid;grid-template-columns:26px minmax(0,1fr) auto;gap:2px 10px;align-items:center;padding:9px 12px;border-bottom:2px dashed var(--mizu-l);cursor:pointer}
+.imp-row:last-child{border-bottom:0}
+.imp-row input[type=checkbox]{width:20px;height:20px;accent-color:#3E3A39;margin:0}
+.imp-row .desc{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:15px}
+.imp-row .d{font-size:12.5px;color:var(--ink-2)}
+.imp-row .amt{text-align:right;font-size:15px;white-space:nowrap}
+.imp-row .sub{grid-column:2/4;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.imp-row select{min-height:30px;padding:1px 26px 1px 8px;font-size:13px;border:2px solid var(--ink);border-radius:10px;background-color:var(--card);width:auto;background-position:right 8px center}
+.imp-row.off{opacity:.55}
+.badge.warn{background:var(--yellow)}
+
 /* ---------- 兩欄版面（手機時上下排，電腦時左右排） ---------- */
 .cols>.col+.col{margin-top:16px}
 
@@ -444,6 +467,7 @@ footer a{color:var(--ink)}
         <div><div class="muted tiny">總花費（台幣）</div><div class="num" style="font-size:28px;line-height:1.2" id="listTotal">NT$0</div></div>
         <div class="muted tiny" style="text-align:right" id="listCount">0 筆</div>
       </div>
+      <button class="btn mizu" style="width:100%" data-act="import-bill">匯入信用卡／行動支付帳單</button>
     </div>
     <div class="col main"><div id="listHost"></div></div>
     </div>
@@ -504,6 +528,7 @@ footer a{color:var(--ink)}
 
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
+<input type="file" id="billFile" accept=".csv,.txt,.xlsx,.xls,text/csv" hidden>
 
 <noscript><p style="text-align:center;padding:20px">這個網頁需要開啟 JavaScript 才能使用。</p></noscript>
 
@@ -615,7 +640,7 @@ function weekday(dateStr) {
 let storageProblem = '';
 
 function emptyTrip() {
-  return { tripName: '我的旅程', defaultCurrency: 'JPY', members: [], expenses: [], rateOverrides: {} };
+  return { tripName: '我的旅程', defaultCurrency: 'JPY', members: [], expenses: [], rateOverrides: {}, me: null };
 }
 
 // 檢查並整理資料，壞掉的欄位補預設值、不合法的帳目丟掉
@@ -652,6 +677,7 @@ function normalizeTrip(d) {
       });
     }
   }
+  if (typeof d.me === 'string' && ids.has(d.me)) t.me = d.me;
   if (d.rateOverrides && typeof d.rateOverrides === 'object') {
     for (const [k, v] of Object.entries(d.rateOverrides)) if (CUR[k] && Number(v) > 0) t.rateOverrides[k] = Number(v);
   }
@@ -870,7 +896,7 @@ function newDraft() {
   return {
     date: todayStr(), title: '', category: '餐飲', amount: '',
     currency: trip.defaultCurrency || 'JPY', rate: '', rateTouched: false,
-    payerId: trip.members[0]?.id || null,
+    payerId: meId() || trip.members[0]?.id || null,
     participantIds: trip.members.map(m => m.id), participantsTouched: false
   };
 }
@@ -1089,6 +1115,7 @@ function renderAdd() {
     return;
   }
   syncDraft(addDraft);
+  if (prefillInfo && !trip.members.some(m => m.id === addDraft.payerId)) addDraft.payerId = meId() || trip.members[0].id;
   addFormApi = buildExpenseForm(addDraft, {
     submitLabel: '新增這筆',
     onCurrency: renderRateCard,
@@ -1099,17 +1126,23 @@ function renderAdd() {
       // 新增後清空金額與名稱，其他選項留著方便連續記帳
       addDraft.amount = ''; addDraft.title = '';
       addDraft.rateTouched = false; addDraft.rate = '';
+      prefillInfo = null;
       renderAll();
       toast(`記下了！${exp.title} ${fmtTWD(exp.twd)}`);
       addFormApi && addFormApi.focusAmount();
     }
   });
-  host.replaceChildren(addFormApi.el);
+  host.innerHTML = prefillInfo ? `<div class="prefill">
+      <div><b>${prefillInfo.source === 'applepay' ? 'Apple Pay 自動帶入' : '從連結帶入'}</b>：${esc(prefillInfo.title || '（沒有店名）')} ${esc(prefillInfo.amountText)}
+      <div class="tiny">確認類別和誰要分，再按「新增這筆」。</div></div>
+      <button type="button" class="btn small" data-act="dismiss-prefill">不記這筆</button></div>` : '';
+  host.appendChild(addFormApi.el);
 }
 $('#addFormHost').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.go) go(b.dataset.go);
   if (b.dataset.act === 'sample') loadSample();
+  if (b.dataset.act === 'dismiss-prefill') { prefillInfo = null; addDraft = newDraft(); renderAdd(); renderRateCard(); }
 });
 
 /* =========================================================
@@ -1365,6 +1398,26 @@ function renderSettings() {
         <input class="input grow" name="name" maxlength="12" placeholder="成員名字，例如：小安" autocomplete="off">
         <button class="btn green" type="submit">新增</button></form>` : '<p class="tiny muted">最多 8 位成員。</p>'}
       <p class="tiny muted" style="margin:10px 0 0">已經出現在帳目中的成員不能刪除，要先刪掉相關帳目；改名不影響帳目。</p>
+    </div>
+
+    <div class="card tint-yellow">
+      <h2>Apple Pay 自動帶入</h2>
+      <div class="field"><label class="label" for="meSel">我是（這台手機的主人，自動帶入時當付款人）</label>
+        <select class="input" id="meSel"><option value="">（還沒設定）</option>${trip.members.map(m => `<option value="${m.id}" ${m.id === meId() ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></div>
+      <p class="tiny" style="margin:12px 0 6px">用 iPhone「捷徑」App 設定一次，之後每次刷 Apple Pay，手機就會打開旅帳本並填好金額和店名：</p>
+      <ol class="steps tiny">
+        <li>打開「捷徑」→ 下方「自動化」→ 右上「＋」→ 選「交易」（iOS 17 以上）。</li>
+        <li>選要觸發的卡片，選「立即執行」→「下一步」→「新增空白自動化」。</li>
+        <li>加兩個「URL 編碼」動作，分別放入變數「金額」(Amount) 和「商家」(Merchant)。</li>
+        <li>加「URL」動作，貼上下面的網址範本，把 <b>[金額]</b>、<b>[商家]</b> 換成上一步兩個「URL 編碼」的結果。</li>
+        <li>加「打開 URL」動作，完成。</li>
+      </ol>
+      <div class="url-box num" id="shortcutUrl">${esc(shortcutTemplate())}</div>
+      <div class="row" style="flex-wrap:wrap;margin-top:10px">
+        <button class="btn small" data-act="copy-url">${ICON.copy}複製網址範本</button>
+        <button class="btn small mizu" data-act="test-url">用範例試試</button>
+      </div>
+      <p class="tiny muted" style="margin:10px 0 0">只有實體感應的 Apple Pay 會觸發；LINE Pay、網路刷卡請回國後匯入帳單，現金照常手動記。</p>
     </div>`;
   $('#settingsMain').innerHTML = `
 
@@ -1373,6 +1426,12 @@ function renderSettings() {
       <div id="setRateStatus">${rateStatusHTML()}</div>
       <ul class="rate-list" id="rateList">${rateListHTML()}</ul>
       <button class="btn small" style="margin-top:10px" data-act="refresh" ${rateState.refreshing ? 'disabled' : ''}>${ICON.refresh}重新抓取</button>
+    </div>
+
+    <div class="card">
+      <h2>匯入信用卡／行動支付帳單</h2>
+      <p class="tiny muted" style="margin:0 0 12px">支援 CSV 和 Excel（.xlsx／.xls）。從網銀或支付 App 下載帳單，選擇檔案後會自動找出日期、說明和台幣金額欄位，再勾選這趟旅行的消費加進來。帳上是實際扣款的台幣，不用再換匯率。</p>
+      <button class="btn mizu" data-act="import-bill">選擇帳單檔案</button>
     </div>
 
     <div class="card">
@@ -1402,6 +1461,11 @@ settingsHost.addEventListener('change', e => {
     addDraft.currency = t.value; addDraft.rateTouched = false; addDraft.rate = '';
     renderAdd(); renderRateCard();
     toast(`預設幣別改為 ${t.value}`);
+  }
+  if (t.id === 'meSel') {
+    trip.me = t.value || null; saveTrip();
+    if (trip.me && !addFormApi?.touched) { addDraft.payerId = trip.me; renderAdd(); }
+    toast(trip.me ? `好的，你是 ${memberName(trip.me)}` : '已取消設定');
   }
   if (t.dataset.rename) {
     const m = trip.members.find(x => x.id === t.dataset.rename);
@@ -1448,6 +1512,8 @@ settingsHost.addEventListener('click', async e => {
   if (b.dataset.act === 'import') $('#importFile').click();
   if (b.dataset.act === 'sample') loadSample();
   if (b.dataset.act === 'clear') clearAll();
+  if (b.dataset.act === 'copy-url') toast(await copyText(shortcutTemplate()) ? '已複製網址範本' : '複製失敗，請手動選取');
+  if (b.dataset.act === 'test-url') location.href = pageBase() + '?source=applepay&amount=' + encodeURIComponent('¥1,280') + '&title=' + encodeURIComponent('LAWSON 新宿三丁目店');
 });
 settingsHost.addEventListener('change', e => {
   if (e.target.id === 'importFile' && e.target.files[0]) importJSON(e.target.files[0]);
@@ -1501,6 +1567,325 @@ async function loadSample() {
   addDraft = newDraft(); saveTrip(); renderAll();
   toast('已載入範例：三人東京行');
 }
+
+/* =========================================================
+   我是誰、Apple Pay 捷徑帶入
+   ========================================================= */
+function meId() { return trip.members.some(m => m.id === trip.me) ? trip.me : null; }
+function pageBase() { return location.href.split(/[?#]/)[0]; }
+function shortcutTemplate() {
+  const base = /^https?:/.test(location.protocol) ? pageBase() : 'https://isa92824.github.io/AI-class-ccu/';
+  return `${base}?source=applepay&amount=[金額]&title=[商家]`;
+}
+
+// 依店名猜類別（猜不到就回傳空字串）
+const CAT_RULES = [
+  ['交通', /\bJR\b|鐵道|鉄道|電鉄|新幹線|地鐵|地下鉄|metro|subway|suica|pasmo|icoca|\bbus\b|巴士|バス|taxi|計程車|タクシー|uber|grab|航空|airline|airport|機場|高鐵|台鐵|捷運|parking|停車|railway|train/i],
+  ['住宿', /hotel|飯店|酒店|旅館|ホテル|\binn\b|hostel|booking\.com|agoda|airbnb|民宿|resort|旅店/i],
+  ['門票', /museum|美術館|博物館|ticket|門票|チケット|樂園|disney|\busj\b|universal|水族館|動物園|\bzoo\b|aquarium|展望|tower|temple|寺|神社|castle|城/i],
+  ['餐飲', /restaurant|餐|食堂|飲食|cafe|café|coffee|咖啡|starbucks|ラーメン|拉麵|燒肉|焼肉|壽司|寿司|居酒屋|mcdonald|麥當勞|lawson|羅森|ローソン|7-eleven|7-11|seven|familymart|全家|ファミリーマート|\bbar\b|bakery|麵包|吉野家|すき家|一蘭|food|kitchen|dining|izakaya|ramen|sushi/i],
+  ['購物', /uniqlo|\bgu\b|don quijote|唐吉訶德|ドン・キホーテ|donki|bic ?camera|yodobashi|藥妝|ドラッグ|matsumoto|百貨|\bmall\b|outlet|\bstore\b|\bshop\b|商店|超市|supermarket|daiso|大創|無印|muji|loft|tokyu hands|parco|lumine|amazon/i],
+];
+function guessCategory(text) {
+  for (const [cat, re] of CAT_RULES) if (re.test(text || '')) return cat;
+  return '';
+}
+
+// 解析「¥1,280」「NT$350」「1280 JPY」這類金額字串
+function parseMoney(str) {
+  const s = String(str || '').trim(); if (!s) return null;
+  const up = s.toUpperCase();
+  let currency = null;
+  const code = up.match(/\b(TWD|NTD|JPY|KRW|USD|EUR|THB|HKD|CNY|RMB|SGD|GBP|VND|AUD|MYR|PHP)\b/);
+  if (code) currency = { NTD: 'TWD', RMB: 'CNY' }[code[1]] || code[1];
+  else if (/CN¥|人民幣/.test(s)) currency = 'CNY';
+  else if (/HK\$/.test(up)) currency = 'HKD';
+  else if (/S\$/.test(up)) currency = 'SGD';
+  else if (/A\$/.test(up)) currency = 'AUD';
+  else if (/US\$/.test(up)) currency = 'USD';
+  else if (/NT\$|台幣|臺幣/.test(up)) currency = 'TWD';
+  else if (/[¥￥円]|日圓|日幣/.test(s)) currency = 'JPY';
+  else if (/[₩원]|韓元/.test(s)) currency = 'KRW';
+  else if (/€/.test(s)) currency = 'EUR';
+  else if (/£/.test(s)) currency = 'GBP';
+  else if (/฿/.test(s)) currency = 'THB';
+  else if (/₫/.test(s)) currency = 'VND';
+  else if (/₱/.test(s)) currency = 'PHP';
+  else if (/\bRM/.test(up)) currency = 'MYR';
+  else if (/元/.test(s)) currency = 'TWD';
+  let num = s.replace(/[^\d.,]/g, '');
+  if (num.includes(',') && num.includes('.')) num = num.replace(/,/g, '');
+  else if (num.includes(',')) num = /^\d{1,3}(,\d{3})+$/.test(num) ? num.replace(/,/g, '') : num.replace(',', '.');
+  const amount = Number(num);
+  return { amount: Number.isFinite(amount) ? amount : NaN, currency };
+}
+
+let prefillInfo = null;
+// 網址帶參數打開時（例如捷徑），預先填好記帳表單；按「新增這筆」才會真的存
+function applyUrlPrefill() {
+  const q = new URLSearchParams(location.search);
+  if (!q.has('amount')) return;
+  const money = parseMoney(q.get('amount'));
+  const cur = (q.get('currency') || '').toUpperCase();
+  addDraft = newDraft();
+  addDraft.currency = CUR[cur] ? cur : (money && money.currency && CUR[money.currency]) ? money.currency : trip.defaultCurrency;
+  if (money && money.amount > 0) addDraft.amount = String(money.amount);
+  const title = (q.get('title') || q.get('merchant') || '').trim().slice(0, 40);
+  addDraft.title = title;
+  const cat = q.get('category');
+  addDraft.category = CATEGORIES.includes(cat) ? cat : (guessCategory(title) || '其他');
+  const payer = trip.members.find(m => m.name === q.get('payer'));
+  addDraft.payerId = payer ? payer.id : (meId() || addDraft.payerId);
+  const date = q.get('date');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date || '')) addDraft.date = date;
+  prefillInfo = { source: q.get('source') || 'link', title, amountText: q.get('amount') };
+  // 把參數從網址拿掉，重新整理才不會又帶入一次
+  history.replaceState(null, '', location.pathname + '#add');
+}
+
+/* =========================================================
+   匯入信用卡／行動支付帳單（CSV、Excel）
+   ========================================================= */
+// 讀文字檔：先試 UTF-8，不行就用 Big5（台灣銀行常見的編碼）
+async function readTextSmart(file) {
+  const buf = await file.arrayBuffer();
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^\uFEFF/, ''), enc: 'UTF-8' }; }
+  catch (e) {
+    try { return { text: new TextDecoder('big5').decode(buf), enc: 'Big5' }; }
+    catch (_) { return { text: new TextDecoder('utf-8').decode(buf), enc: 'UTF-8' }; }
+  }
+}
+function parseCSV(text) {
+  const sample = text.split(/\r?\n/).slice(0, 15).join('\n');
+  let delim = ',', best = -1;
+  for (const d of [',', '\t', ';']) { const c = sample.split(d).length; if (c > best) { best = c; delim = d; } }
+  const rows = []; let row = [], field = '', quoted = false;
+  for (let i = 0; i < text.length; i++) {
+    const ch = text[i];
+    if (quoted) {
+      if (ch === '"') { if (text[i + 1] === '"') { field += '"'; i++; } else quoted = false; }
+      else field += ch;
+    } else if (ch === '"') quoted = true;
+    else if (ch === delim) { row.push(field); field = ''; }
+    else if (ch === '\n') { row.push(field); rows.push(row); row = []; field = ''; }
+    else if (ch !== '\r') field += ch;
+  }
+  if (field !== '' || row.length) { row.push(field); rows.push(row); }
+  return rows.map(r => r.map(c => c.trim())).filter(r => r.some(c => c !== ''));
+}
+// Excel 用 SheetJS 解析，需要時才從 CDN 載入
+function loadSheetJS() {
+  if (window.XLSX) return Promise.resolve(window.XLSX);
+  return new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = 'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js';
+    sc.onload = () => resolve(window.XLSX);
+    sc.onerror = () => reject(new Error('sheetjs'));
+    document.head.appendChild(sc);
+  });
+}
+async function readBillRows(file) {
+  if (/\.(xlsx|xls)$/i.test(file.name)) {
+    const X = await loadSheetJS();
+    const wb = X.read(await file.arrayBuffer(), { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = X.utils.sheet_to_json(ws, { header: 1, raw: false, defval: '' });
+    return { rows: rows.map(r => r.map(c => String(c ?? '').trim())).filter(r => r.some(c => c)), enc: 'Excel' };
+  }
+  const { text, enc } = await readTextSmart(file);
+  return { rows: parseCSV(text), enc };
+}
+// 日期：2026/10/14、2026-10-14、115/10/14（民國）、10/14、20261014、1151014
+function parseDateCell(v) {
+  let s = String(v || '').trim(); if (!s) return null;
+  s = s.split(/[\sT]/)[0].replace(/[年月]/g, '/').replace(/日$/, '');
+  let y, m, d;
+  if (/^\d{8}$/.test(s)) { y = +s.slice(0, 4); m = +s.slice(4, 6); d = +s.slice(6, 8); }
+  else if (/^\d{7}$/.test(s)) { y = +s.slice(0, 3) + 1911; m = +s.slice(3, 5); d = +s.slice(5, 7); }
+  else {
+    const p = s.split(/[\/\-.]/).filter(Boolean);
+    if (p.length === 3) {
+      const [a, b, c] = p;
+      if (a.length === 4) { y = +a; m = +b; d = +c; }
+      else if (a.length === 3 && +a < 300) { y = +a + 1911; m = +b; d = +c; }
+      else if (c.length === 4) { y = +c; m = +a; d = +b; }
+      else if (c.length <= 2 && +a <= 12) { y = 2000 + +c; m = +a; d = +b; }
+      else return null;
+    } else if (p.length === 2 && p.every(x => /^\d{1,2}$/.test(x))) { y = new Date().getFullYear(); m = +p[0]; d = +p[1]; }
+    else return null;
+  }
+  if (!(y > 1990 && y < 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) return null;
+  return `${y}-${pad(m)}-${pad(d)}`;
+}
+// 金額：去掉 NT$、逗號；(123) 或 -123 視為負數（退款、繳款）
+function parseAmountCell(v) {
+  let s = String(v || '').trim(); if (!/\d/.test(s)) return NaN;
+  const neg = /^\(.*\)$/.test(s) || /^[-−]|[-−]$/.test(s);
+  s = s.replace(/[^\d.]/g, '');
+  const n = Number(s);
+  return Number.isFinite(n) && s ? (neg ? -n : n) : NaN;
+}
+// 自動猜哪一欄是日期、說明、台幣金額、外幣金額、幣別
+function guessBillMapping(rows) {
+  const KW = {
+    date: /消費日|交易日|日期|時間|date/i,
+    desc: /說明|摘要|商店|特店|商家|消費明細|明細|內容|項目|description|merchant|名稱|店名/i,
+    twd: /新臺幣|新台幣|台幣|臺幣|入帳金額|金額|amount|NT/i,
+    fx: /外幣|原幣|消費地|當地/i,
+    cur: /幣別|currency/i
+  };
+  const hi = rows.slice(0, 20).findIndex(r => r.some(c => KW.date.test(c)) && r.some(c => KW.twd.test(c) || KW.desc.test(c)));
+  const header = hi >= 0 ? rows[hi] : null;
+  const data = rows.slice(hi >= 0 ? hi + 1 : 0);
+  const ncol = Math.max(...rows.map(r => r.length));
+  const col = i => data.map(r => r[i] || '');
+  const dateScore = i => col(i).filter(v => parseDateCell(v)).length;
+  const numScore = i => col(i).filter(v => Number.isFinite(parseAmountCell(v)) && !parseDateCell(v)).length;  // 日期不算數字
+  const idx = [...Array(ncol).keys()];
+  const byHeader = (re, not = [], ok = () => true) => header ? idx.find(i => !not.includes(i) && re.test(header[i] || '') && ok(i)) ?? -1 : -1;
+  const half = Math.max(1, data.length / 2);
+  let date = byHeader(KW.date, [], i => dateScore(i) >= half);
+  if (date < 0) date = idx.reduce((b, i) => dateScore(i) > (b < 0 ? 0 : dateScore(b)) ? i : b, -1);
+  const cur = byHeader(KW.cur, [date], i => numScore(i) < half);
+  const fx = byHeader(KW.fx, [date, cur], i => numScore(i) >= half);
+  const notDate = i => !KW.date.test(header[i] || '');
+  let twd = byHeader(/新臺幣|新台幣|台幣|臺幣|入帳金額|NT/i, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
+  if (twd < 0) twd = byHeader(KW.twd, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
+  if (twd < 0) twd = idx.filter(i => ![date, cur, fx].includes(i)).reduce((b, i) => numScore(i) > (b < 0 ? 0 : numScore(b)) ? i : b, -1);
+  let desc = byHeader(KW.desc, [date, cur, fx, twd], i => numScore(i) < half);
+  if (desc < 0) {
+    const avgLen = i => col(i).reduce((s, v) => s + (Number.isFinite(parseAmountCell(v)) ? 0 : v.length), 0);
+    desc = idx.filter(i => ![date, cur, fx, twd].includes(i)).reduce((b, i) => avgLen(i) > (b < 0 ? 0 : avgLen(b)) ? i : b, -1);
+  }
+  return { headerIndex: hi, header, ncol, map: { date, desc, twd, fx, cur } };
+}
+
+async function openBillImport(file) {
+  if (trip.members.length < 2) { toast('先到設定新增至少 2 位成員'); go('settings'); return; }
+  let parsed;
+  try { parsed = await readBillRows(file); }
+  catch (e) { toast(e.message === 'sheetjs' ? 'Excel 解析元件載入失敗，請改存成 CSV 再匯入' : '讀不到這個檔案'); return; }
+  if (!parsed.rows.length) { toast('檔案裡沒有資料'); return; }
+  const g = guessBillMapping(parsed.rows);
+  const dates = trip.expenses.map(e => e.date).sort();
+  const st = {
+    map: g.map, payerId: meId() || trip.members[0].id, parts: trip.members.map(m => m.id),
+    from: dates[0] || '', to: dates[dates.length - 1] || '', items: [], picked: new Set(), cats: {}
+  };
+  const dataRows = parsed.rows.slice(g.headerIndex + 1);
+  const colName = i => g.header && g.header[i] ? `${String.fromCharCode(65 + i)}・${g.header[i]}` : `第 ${String.fromCharCode(65 + i)} 欄`;
+  const colOptions = (sel, optional) => (optional ? `<option value="-1">（沒有）</option>` : '') +
+    [...Array(g.ncol).keys()].map(i => `<option value="${i}" ${i === sel ? 'selected' : ''}>${esc(colName(i))}</option>`).join('');
+
+  const modal = openModal('sheet', `
+    <div class="grab"></div>
+    <div class="sheet-head"><h2>匯入帳單</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    <p class="tiny muted" style="margin:0 0 10px">${esc(file.name)} · ${parsed.enc} · ${dataRows.length} 列。欄位是自動判斷的，不對可以改。</p>
+    <div class="imp-map">
+      <label class="field"><span class="label">日期欄</span><select class="input" data-map="date">${colOptions(st.map.date)}</select></label>
+      <label class="field"><span class="label">說明／店名欄</span><select class="input" data-map="desc">${colOptions(st.map.desc)}</select></label>
+      <label class="field"><span class="label">台幣金額欄</span><select class="input" data-map="twd">${colOptions(st.map.twd)}</select></label>
+      <label class="field"><span class="label">外幣金額欄（選填）</span><select class="input" data-map="fx">${colOptions(st.map.fx, true)}</select></label>
+    </div>
+    <div class="imp-opts" style="margin-top:12px">
+      <label class="field"><span class="label">付款人</span><select class="input" data-opt="payer">${trip.members.map(m => `<option value="${m.id}" ${m.id === st.payerId ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <div class="field span2"><span class="label">旅行日期（範圍內的消費會自動勾選）</span>
+        <div class="row"><input class="input" type="date" data-opt="from" value="${st.from}" aria-label="開始日期"><input class="input" type="date" data-opt="to" value="${st.to}" aria-label="結束日期"></div></div>
+    </div>
+    <div class="field" style="margin-top:10px"><span class="label">誰要分</span>
+      <div class="chips">${trip.members.map(m => `<button type="button" class="chip part" data-ipart="${m.id}" aria-pressed="true">${faceSVG(m, '')}${esc(m.name)}<span class="tick">✓</span></button>`).join('')}</div></div>
+    <div class="imp-head"><span data-count></span><button type="button" class="link-btn" data-act="toggle-all">全選／全不選</button></div>
+    <div class="imp-list" data-list></div>
+    <button class="btn primary big" style="margin-top:14px" data-act="do-import"></button>`);
+  const box = modal.box;
+  if (st.map.cur >= 0) st.curCol = st.map.cur;
+
+  // 依目前的欄位對應，把每一列轉成帳目候選
+  function buildItems() {
+    st.items = [];
+    dataRows.forEach((r, i) => {
+      const date = parseDateCell(r[st.map.date]);
+      const twd = parseAmountCell(r[st.map.twd]);
+      if (!date || !(twd > 0)) return;   // 跳過標題、小計、退款與繳款
+      const desc = (r[st.map.desc] || '').replace(/\s+/g, ' ').trim() || '帳單消費';
+      const fxAmt = st.map.fx >= 0 ? parseAmountCell(r[st.map.fx]) : NaN;
+      const fxCurRaw = st.curCol >= 0 ? (r[st.curCol] || '') : '';
+      const fxCur = (parseMoney(fxCurRaw + ' 1') || {}).currency || (CUR[fxCurRaw.toUpperCase()] ? fxCurRaw.toUpperCase() : null);
+      const dup = trip.expenses.some(e => e.date === date && Math.abs(e.twd - twd) < 1);
+      st.items.push({ i, date, desc, twd, fxAmt, fxCur, dup });
+      if (!(i in st.cats)) st.cats[i] = guessCategory(desc) || '其他';
+    });
+    autoPick();
+  }
+  function autoPick() {
+    st.picked = new Set(st.items.filter(it => !it.dup && (!st.from || it.date >= st.from) && (!st.to || it.date <= st.to)).map(it => it.i));
+  }
+  function renderList() {
+    const list = $('[data-list]', box);
+    if (!st.items.length) {
+      list.innerHTML = `<p class="muted tiny" style="padding:14px;margin:0">找不到有日期和金額的消費，請檢查上面的欄位設定。</p>`;
+    } else {
+      list.innerHTML = st.items.map(it => `<label class="imp-row ${st.picked.has(it.i) ? '' : 'off'}">
+        <input type="checkbox" data-pick="${it.i}" ${st.picked.has(it.i) ? 'checked' : ''}>
+        <div style="min-width:0"><div class="desc">${esc(it.desc)}</div><div class="d num">${it.date}${it.fxAmt > 0 ? ' · 外幣 ' + it.fxAmt.toLocaleString('en-US') + (it.fxCur ? ' ' + it.fxCur : '') : ''}</div></div>
+        <div class="amt num">${fmtTWD(it.twd)}</div>
+        <div class="sub"><select data-icat="${it.i}" aria-label="類別">${CATEGORIES.map(c => `<option ${c === st.cats[it.i] ? 'selected' : ''}>${c}</option>`).join('')}</select>${it.dup ? '<span class="badge warn">可能已記過</span>' : ''}</div>
+      </label>`).join('');
+    }
+    updateFooter();
+  }
+  function updateFooter() {
+    const chosen = st.items.filter(it => st.picked.has(it.i));
+    const sum = chosen.reduce((s, it) => s + it.twd, 0);
+    $('[data-count]', box).textContent = `勾選 ${chosen.length} / ${st.items.length} 筆`;
+    const btn = $('[data-act=do-import]', box);
+    btn.textContent = chosen.length ? `加入 ${chosen.length} 筆（${fmtTWD(sum)}）` : '請勾選要加入的消費';
+    btn.disabled = !chosen.length || !st.parts.length;
+    if (!st.parts.length) btn.textContent = '至少選一位分攤成員';
+  }
+
+  box.addEventListener('change', e => {
+    const t = e.target;
+    if (t.dataset.map) { st.map[t.dataset.map] = +t.value; buildItems(); renderList(); }
+    if (t.dataset.opt === 'payer') st.payerId = t.value;
+    if (t.dataset.opt === 'from' || t.dataset.opt === 'to') { st[t.dataset.opt] = t.value; autoPick(); renderList(); }
+    if (t.dataset.pick) { const i = +t.dataset.pick; t.checked ? st.picked.add(i) : st.picked.delete(i); t.closest('.imp-row').classList.toggle('off', !t.checked); updateFooter(); }
+    if (t.dataset.icat) st.cats[+t.dataset.icat] = t.value;
+  });
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.ipart) {
+      const id = b.dataset.ipart;
+      st.parts = st.parts.includes(id) ? st.parts.filter(x => x !== id) : trip.members.map(m => m.id).filter(x => x === id || st.parts.includes(x));
+      b.setAttribute('aria-pressed', st.parts.includes(id)); updateFooter();
+    }
+    if (b.dataset.act === 'toggle-all') {
+      st.picked = st.picked.size === st.items.length ? new Set() : new Set(st.items.map(it => it.i)); renderList();
+    }
+    if (b.dataset.act === 'do-import') {
+      const chosen = st.items.filter(it => st.picked.has(it.i));
+      for (const it of chosen) {
+        const useFx = it.fxAmt > 0 && it.fxCur && it.fxCur !== 'TWD' && CUR[it.fxCur];
+        trip.expenses.push({
+          id: newExpenseId(), date: it.date, title: it.desc.slice(0, 40), category: st.cats[it.i] || '其他',
+          amount: useFx ? it.fxAmt : it.twd, currency: useFx ? it.fxCur : 'TWD',
+          rate: useFx ? Number((it.twd / it.fxAmt).toPrecision(6)) : 1,
+          twd: round2(it.twd), payerId: st.payerId, participantIds: st.parts.slice()
+        });
+      }
+      saveTrip(); modal.close(); renderAll(); go('list');
+      toast(`已加入 ${chosen.length} 筆帳單消費`);
+    }
+  });
+  buildItems(); renderList();
+}
+document.addEventListener('click', e => {
+  if (e.target.closest('[data-act=import-bill]')) $('#billFile').click();
+});
+$('#billFile').addEventListener('change', e => {
+  const f = e.target.files[0]; e.target.value = '';
+  if (f) openBillImport(f);
+});
 
 /* =========================================================
    對話框、底部面板、提示
@@ -1605,8 +1990,11 @@ function renderAll() {
    ========================================================= */
 const cached = readRatesCache();
 if (cached) rateState = { status: 'cache', perTwd: cached.perTwd, source: cached.source, dataTime: cached.dataTime, fetchedAt: cached.fetchedAt, refreshing: true };
+applyUrlPrefill();
 renderAll();
-showTab(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'add');
+showTab(prefillInfo ? 'add' : TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'add');
+// 從 Apple Pay 打開時，直接捲到記帳表單
+if (prefillInfo) setTimeout(() => $('#addCard').scrollIntoView({ block: 'start' }), 80);
 if (storageProblem) toast(storageProblem);
 loadRates(false);
 
