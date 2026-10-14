@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#FFFCF6">
-<title>旅帳本 TripSplit</title>
+<title>旅行好記</title>
 <meta name="description" content="出國旅遊分帳器：記下每筆外幣花費和誰付的，自動抓匯率換算台幣，算出誰該給誰多少錢。">
 <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='13' fill='%23F6D27A' stroke='%233E3A39' stroke-width='3'/%3E%3Cpath d='M11 9l5 6 5-6M16 15v9M11.5 17h9M11.5 20.5h9' fill='none' stroke='%233E3A39' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -12,7 +12,7 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Huninn&display=swap">
 <style>
 /* =========================================================
-   旅帳本 TripSplit — 日系繪本風
+   旅行好記 — 日系繪本風
    和紙白底、墨灰粗線、大圓角、平塗配色
    ========================================================= */
 :root{
@@ -410,7 +410,7 @@ body:has(#bulkBar) .toast{bottom:calc(172px + env(safe-area-inset-bottom))}
   <header class="topbar">
     <div class="brand">
       <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><path d="M11 9l5 6 5-6M16 15v9M11.5 17h9M11.5 20.5h9" fill="none" stroke="#3E3A39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <div>旅帳本<br><small>TRIPSPLIT</small></div>
+      <div>旅行好記<br><small>TRAVEL LOG</small></div>
     </div>
     <div class="mode-switch" role="group" aria-label="切換記帳本或分帳本">
       <button class="mode-btn" data-mode="ledger" aria-pressed="true">
@@ -489,7 +489,7 @@ body:has(#bulkBar) .toast{bottom:calc(172px + env(safe-area-inset-bottom))}
           <div id="ledgerFormHost"></div>
         </div>
         <div class="card hint-link">
-          <div><div>刷卡、LINE Pay 回國再一次匯入</div><div class="tiny muted">支援信用卡帳單、行動支付的 CSV／Excel</div></div>
+          <div><div>刷卡、LINE Pay 回國再一次匯入</div><div class="tiny muted">PDF 帳單、Excel、CSV，或直接貼上網銀明細</div></div>
           <button class="btn mizu small" data-act="import-bill">匯入帳單</button>
         </div>
         <div class="card hint-link">
@@ -661,7 +661,7 @@ body:has(#bulkBar) .toast{bottom:calc(172px + env(safe-area-inset-bottom))}
 </div>
 
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
-<input type="file" id="billFile" accept=".csv,.txt,.xlsx,.xls,text/csv" hidden>
+<input type="file" id="billFile" accept=".csv,.txt,.xlsx,.xls,.pdf,text/csv,application/pdf" hidden>
 <input type="file" id="importFile" accept="application/json,.json" hidden>
 
 <noscript><p style="text-align:center;padding:20px">這個網頁需要開啟 JavaScript 才能使用。</p></noscript>
@@ -1213,9 +1213,10 @@ function buildExpenseForm(d, opts) {
   };
 }
 
+let idSeq = 0;
 function newId(prefix, list) {
-  let id = prefix + Date.now();
-  while (list.some(e => e.id === id)) id += 'x';
+  let id;
+  do { id = prefix + Date.now().toString(36) + (idSeq++).toString(36); } while (list.some(e => e.id === id));
   return id;
 }
 const MONEY_KEYS = ['date', 'title', 'category', 'amount', 'currency', 'rate', 'twd'];
@@ -1726,7 +1727,7 @@ function openSplitEdit(id) {
    ========================================================= */
 function settlementText() {
   const { transfers, total } = computeSettlement();
-  const lines = [`【旅帳本】${trip.tripName} 分帳結算`, `共同花費 ${fmtTWD(total)}，共 ${trip.expenses.length} 筆`, ''];
+  const lines = [`【旅行好記】${trip.tripName} 分帳結算`, `共同花費 ${fmtTWD(total)}，共 ${trip.expenses.length} 筆`, ''];
   if (!transfers.length) lines.push('大家都已經平衡，不用轉帳！');
   for (const t of transfers) lines.push(`${memberName(t.from)} → ${memberName(t.to)}：${fmtTWD(t.amount)}`);
   lines.push('', '（金額四捨五入到台幣整數，總和可能差 1 元）');
@@ -1833,7 +1834,7 @@ function renderSettings() {
   $('#settingsMain').innerHTML = `
     <div class="card tint-yellow" id="applepayCard">
       <h2>記帳本：Apple Pay 自動帶入</h2>
-      <p class="tiny" style="margin:0 0 6px">用 iPhone「捷徑」App 設定一次，之後每次刷 Apple Pay，手機就會打開旅帳本的記帳本，填好金額和店名：</p>
+      <p class="tiny" style="margin:0 0 6px">用 iPhone「捷徑」App 設定一次，之後每次刷 Apple Pay，手機就會打開旅行好記的記帳本，填好金額和店名：</p>
       <ol class="steps tiny">
         <li>打開「捷徑」→ 下方「自動化」→ 右上「＋」→ 選「交易」（iOS 17 以上）。</li>
         <li>選要觸發的卡片，選「立即執行」→「下一步」→「新增空白自動化」。</li>
@@ -1943,7 +1944,7 @@ function exportJSON() {
   const blob = new Blob([JSON.stringify(trip, null, 2)], { type: 'application/json' });
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
-  a.download = `tripsplit-${todayStr()}.json`;
+  a.download = `travel-log-${todayStr()}.json`;
   document.body.appendChild(a); a.click(); a.remove();
   setTimeout(() => URL.revokeObjectURL(a.href), 1000);
   toast('已匯出備份檔');
@@ -1958,7 +1959,7 @@ function importJSON(file) {
       const ok = await confirmDialog({ title: '匯入備份？', message: `「${t.tripName}」：${t.members.length} 位成員、記帳本 ${t.ledger.length} 筆、分帳本 ${t.expenses.length} 筆。\n目前的資料會被覆蓋。`, ok: '匯入' });
       if (!ok) return;
       trip = t; resetDrafts(); saveTrip(); renderAll(); toast('匯入完成');
-    } catch (err) { toast('這不是旅帳本的備份檔'); }
+    } catch (err) { toast('這不是旅行好記的備份檔'); }
   };
   reader.readAsText(file);
 }
@@ -1998,11 +1999,11 @@ async function loadSample() {
    Apple Pay 捷徑帶入（只進記帳本）
    ========================================================= */
 const CAT_RULES = [
-  ['交通', /\bJR\b|鐵道|鉄道|電鉄|新幹線|地鐵|地下鉄|metro|subway|suica|pasmo|icoca|\bbus\b|巴士|バス|taxi|計程車|タクシー|uber|grab|航空|airline|airport|機場|高鐵|台鐵|捷運|parking|停車|railway|train/i],
+  ['交通', /\bJR\b|鐵道|鉄道|電鉄|新幹線|地鐵|地下鉄|metro|subway|suica|pasmo|icoca|\bbus\b|巴士|バス|taxi|計程車|タクシー|uber|grab|航空|airline|airport|機場|高鐵|台鐵|臺鐵|鐵路|捷運|悠遊卡|一卡通|加油|中油|台塑石油|parking|停車|railway|train|易遊網|eztravel|機票/i],
   ['住宿', /hotel|飯店|酒店|旅館|ホテル|\binn\b|hostel|booking\.com|agoda|airbnb|民宿|resort|旅店/i],
-  ['門票', /museum|美術館|博物館|ticket|門票|チケット|樂園|disney|\busj\b|universal|水族館|動物園|\bzoo\b|aquarium|展望|tower|temple|寺|神社|castle|城/i],
-  ['餐飲', /restaurant|餐|食堂|飲食|cafe|café|coffee|咖啡|starbucks|ラーメン|拉麵|燒肉|焼肉|壽司|寿司|居酒屋|mcdonald|麥當勞|lawson|羅森|ローソン|7-eleven|7-11|seven|familymart|全家|ファミリーマート|\bbar\b|bakery|麵包|吉野家|すき家|一蘭|food|kitchen|dining|izakaya|ramen|sushi/i],
-  ['購物', /uniqlo|\bgu\b|don quijote|唐吉訶德|ドン・キホーテ|donki|bic ?camera|yodobashi|藥妝|ドラッグ|matsumoto|百貨|\bmall\b|outlet|\bstore\b|\bshop\b|商店|超市|supermarket|daiso|大創|無印|muji|loft|tokyu hands|parco|lumine|amazon/i],
+  ['門票', /museum|美術館|博物館|ticket|門票|チケット|樂園|disney|\busj\b|universal|水族館|動物園|\bzoo\b|aquarium|展望|tower|temple|寺|神社|castle|城|kkday|klook|客路/i],
+  ['餐飲', /restaurant|餐|食堂|飲食|cafe|café|coffee|咖啡|starbucks|星巴克|路易莎|ラーメン|拉麵|燒肉|焼肉|壽司|寿司|居酒屋|mcdonald|麥當勞|摩斯|肯德基|lawson|羅森|ローソン|7-eleven|7-11|seven|統一超商|familymart|全家|萊爾富|ファミリーマート|\bbar\b|bakery|麵|吐司|土司|麻辣|火鍋|鍋|便當|早餐|飲料|茶|蔬|sufood|吉野家|すき家|一蘭|food|kitchen|dining|izakaya|ramen|sushi/i],
+  ['購物', /uniqlo|\bgu\b|don quijote|唐吉訶德|ドン・キホーテ|donki|bic ?camera|yodobashi|藥妝|藥|ドラッグ|matsumoto|百貨|\bmall\b|outlet|\bstore\b|\bshop\b|商店|超市|supermarket|全聯|家樂福|大潤發|好市多|costco|ikea|蝦皮|momo|coupang|酷澎|pchome|屈臣氏|康是美|daiso|大創|無印|muji|loft|tokyu hands|parco|lumine|amazon|書店|文化/i],
 ];
 function guessCategory(text) {
   for (const [cat, re] of CAT_RULES) if (re.test(text || '')) return cat;
@@ -2095,7 +2096,164 @@ function loadSheetJS() {
     document.head.appendChild(sc);
   });
 }
+/* ---- 貼上的帳單文字／PDF 帳單：一行一筆，找日期和金額 ---- */
+// 例：「10/12 10/14 LAWSON SHINJUKU JP JPY 1,280 254」→ 消費日 10/12、外幣 JPY 1,280、台幣 254
+const SKIP_LINE = /繳款|自動扣繳|轉帳|上期|本期應繳|應繳總額|最低應繳|合計|小計|總計|循環|利息|違約金|帳單日|結帳日|額度|紅利|點數|回饋/;
+// 沒寫年份的 MM/DD：當成今年，但不會是一個月以後的日期（那就是去年）
+function guessYearDate(mm, dd) {
+  const today = new Date();
+  let y = today.getFullYear();
+  if (new Date(y, mm - 1, dd) - today > 31 * 864e5) y--;
+  return `${y}-${pad(mm)}-${pad(dd)}`;
+}
+// 玉山網銀「帳單明細」複製下來的格式：一筆消費拆成好幾行
+//   09/12            ← 交易日
+//   09/16            ← 入帳日
+//   ＣＯＵＰＡＮＧ    ← 交易項目（國外消費會帶國別和外幣折算日）
+//   Apple Pay        ← 行動支付（有才會出現）
+//   JPY / 1,280      ← 幣別／金額（國外消費才有）
+//   TWD / 254        ← 繳款幣別／金額
+function parseStatementRecords(text) {
+  const lines = String(text).split(/\r?\n/).map(l => l.normalize('NFKC').replace(/[\s\u3000]+/g, ' ').trim());
+  const isDate = l => /^\d{1,2}\/\d{1,2}$/.test(l);
+  const isCur = l => /^[A-Z]{3}$/.test(l) && !!CUR[l];
+  const isAmt = l => /^[-−]?[\d,]+(\.\d+)?$/.test(l);
+  const MOBILE = /^(Apple Pay|Google Pay|Samsung Pay|Garmin Pay|Fitbit Pay|LINE Pay)$/i;
+  const recs = []; let cur = null;
+  for (let i = 0; i < lines.length; i++) {
+    const l = lines[i]; if (!l) continue;
+    if (isDate(l) && isDate(lines[i + 1] || '')) { cur = { d: l, items: [], pairs: [], mobile: '' }; recs.push(cur); i++; continue; }
+    if (/^[^\d]{1,14}:/.test(l)) { cur = null; continue; }      // 「本期合計：」「卡號：」這類標題，結束目前這筆
+    if (!cur) continue;
+    if (isCur(l) && isAmt(lines[i + 1] || '')) { cur.pairs.push([l, lines[i + 1]]); i++; continue; }
+    if (MOBILE.test(l)) { cur.mobile = l; continue; }
+    cur.items.push(l);
+  }
+  const rows = [];
+  for (const r of recs) {
+    if (!r.pairs.length) continue;                 // 例如「使用 e point 折現金」沒有金額
+    const pay = r.pairs[r.pairs.length - 1];       // 最後一組 = 繳款幣別／金額
+    if (pay[0] !== 'TWD') continue;
+    const twd = parseAmountCell(pay[1]);
+    if (!(twd > 0)) continue;                      // 繳款、折抵、退款是負數
+    const desc = r.items.join(' ').replace(/\s\d{1,2}\/\d{1,2}$/, '').replace(/\s[A-Z]{2}$/, '').trim() || '帳單消費';   // 去掉結尾的外幣折算日、國別碼
+    if (SKIP_LINE.test(desc)) continue;
+    let fxAmt = '', fxCur = '';
+    if (r.pairs.length >= 2 && r.pairs[0][0] !== 'TWD') { fxCur = r.pairs[0][0]; fxAmt = String(parseAmountCell(r.pairs[0][1])); }
+    const [mm, dd] = r.d.split('/').map(Number);
+    const method = r.mobile ? (/apple/i.test(r.mobile) ? 'Apple Pay' : /line/i.test(r.mobile) ? 'LINE Pay' : '其他')
+      : /^連加\*/.test(desc) ? 'LINE Pay' : '';
+    rows.push([guessYearDate(mm, dd), desc, String(twd), fxAmt, fxCur, method]);
+  }
+  return rows;
+}
+function parseStatementText(text) {
+  const recs = parseStatementRecords(text);
+  if (recs.length) return [['消費日', '消費明細', '新臺幣金額', '外幣金額', '幣別', '行動支付'], ...recs];
+  return parseStatementLines(text);
+}
+function parseStatementLines(text) {
+  const today = new Date(), year0 = today.getFullYear();
+  const isNum = t => /\d/.test(t) && /^[-−]?[\d,]*\d(\.\d+)?[-−]?$/.test(t);
+  const rows = [];
+  for (const raw of String(text).split(/\r?\n/)) {
+    const line = raw.normalize('NFKC').replace(/[\s\u3000]+/g, ' ').trim();
+    if (!line || SKIP_LINE.test(line)) continue;
+    const dm = [...line.matchAll(/(?<![\d\/])(?:(\d{2,4})[\/.\-])?(\d{1,2})[\/.\-](\d{1,2})(?![\d\/])/g)];
+    if (!dm.length) continue;
+    const [, yy, mm, dd] = dm[0];
+    let y = yy ? (yy.length === 3 ? +yy + 1911 : yy.length === 2 ? 2000 + +yy : +yy) : year0;
+    const m = +mm, d = +dd;
+    if (m < 1 || m > 12 || d < 1 || d > 31) continue;
+    if (!yy && new Date(y, m - 1, d) - today > 31 * 864e5) y--;   // 沒寫年份：不會是一個月後的日期，就當去年
+    let rest = line;
+    for (const x of dm) rest = rest.replace(x[0], ' ');
+    const toks = rest.split(' ').filter(Boolean);
+    const nums = toks.map((t, i) => ({ t, i })).filter(o => isNum(o.t));
+    if (!nums.length) continue;
+    const last = nums[nums.length - 1];          // 最後一個數字 = 台幣金額
+    const twd = parseAmountCell(last.t);
+    if (!(twd > 0)) continue;                    // 退款、繳款是負數，跳過
+    let fxCur = '', fxAmt = '';
+    const ci = toks.findIndex(t => CUR[t.toUpperCase()] && t.toUpperCase() !== 'TWD');
+    if (ci >= 0) {
+      fxCur = toks[ci].toUpperCase();
+      const near = nums.filter(o => o !== last).sort((a, b) => Math.abs(a.i - ci) - Math.abs(b.i - ci))[0];
+      if (near && parseAmountCell(near.t) > 0) fxAmt = String(parseAmountCell(near.t));
+    }
+    const words = toks.filter(t => !isNum(t) && !CUR[t.toUpperCase()]);
+    while (words.length > 1 && /^[A-Z]{2}$/.test(words[words.length - 1])) words.pop();   // 去掉結尾的國別碼（JP、KR）
+    rows.push([`${y}-${pad(m)}-${pad(d)}`, words.join(' ').trim() || '帳單消費', String(twd), fxAmt, fxCur]);
+  }
+  return rows.length ? [['消費日', '消費明細', '新臺幣金額', '外幣金額', '幣別'], ...rows] : [];
+}
+// PDF 用 pdf.js 讀文字，需要時才從 CDN 載入
+const PDFJS_VER = '3.11.174';
+function loadPdfJs() {
+  if (window.pdfjsLib) return Promise.resolve(window.pdfjsLib);
+  return new Promise((resolve, reject) => {
+    const sc = document.createElement('script');
+    sc.src = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VER}/pdf.min.js`;
+    sc.onload = () => {
+      window.pdfjsLib.GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS_VER}/pdf.worker.min.js`;
+      resolve(window.pdfjsLib);
+    };
+    sc.onerror = () => reject(new Error('pdfjs'));
+    document.head.appendChild(sc);
+  });
+}
+async function readPdfText(file) {
+  const lib = await loadPdfJs();
+  const bytes = new Uint8Array(await file.arrayBuffer());
+  let password = '';
+  for (let attempt = 0; attempt < 5; attempt++) {
+    try {
+      const doc = await lib.getDocument({
+        data: bytes.slice(), password,
+        cMapUrl: `https://cdn.jsdelivr.net/npm/pdfjs-dist@${PDFJS_VER}/cmaps/`, cMapPacked: true
+      }).promise;
+      const lines = [];
+      for (let p = 1; p <= doc.numPages; p++) {
+        const tc = await (await doc.getPage(p)).getTextContent();
+        // 同一高度（y 差 3 以內）的文字拼成一行，由左到右
+        const items = tc.items.filter(it => it.str && it.str.trim()).map(it => ({ x: it.transform[4], y: it.transform[5], w: it.width || 0, h: Math.abs(it.transform[3]) || 10, s: it.str.trim() })).sort((a, b) => b.y - a.y || a.x - b.x);
+        let cur = null;
+        for (const it of items) {
+          if (!cur || Math.abs(cur.y - it.y) > 3) { cur = { y: it.y, parts: [] }; lines.push(cur); }
+          cur.parts.push(it);
+        }
+      }
+      // 字和字之間的空隙超過字高的 0.4 倍才算分欄，加空白；否則直接相連（很多 PDF 是一個字一個字存的）
+      const joinLine = parts => {
+        parts.sort((a, b) => a.x - b.x);
+        let out = '', end = null;
+        for (const o of parts) {
+          if (end !== null && o.x - end > o.h * 0.4) out += ' ';
+          out += o.s; end = o.x + o.w;
+        }
+        return out;
+      };
+      // NFKC：把「⽟」這類部首字元轉回一般的「玉」
+      return lines.map(l => joinLine(l.parts).normalize('NFKC')).join('\n');
+    } catch (e) {
+      if (e && e.name === 'PasswordException') {
+        const pw = await promptDialog({
+          title: attempt ? '密碼不對，再試一次' : '這份帳單有密碼',
+          message: '請輸入 PDF 帳單的開啟密碼（你在銀行設定的帳單密碼）。\n密碼只在你的瀏覽器裡用來打開檔案，不會儲存或上傳。',
+          ok: '打開', type: 'password'
+        });
+        if (pw === null) throw new Error('cancel');
+        password = pw; continue;
+      }
+      throw e;
+    }
+  }
+  throw new Error('password');
+}
 async function readBillRows(file) {
+  if (/\.pdf$/i.test(file.name) || file.type === 'application/pdf') {
+    return { rows: parseStatementText(await readPdfText(file)), enc: 'PDF' };
+  }
   if (/\.(xlsx|xls)$/i.test(file.name)) {
     const X = await loadSheetJS();
     const wb = X.read(await file.arrayBuffer(), { type: 'array' });
@@ -2156,7 +2314,7 @@ function guessBillMapping(rows) {
   let date = byHeader(KW.date, [], i => dateScore(i) >= half);
   if (date < 0) date = idx.reduce((b, i) => dateScore(i) > (b < 0 ? 0 : dateScore(b)) ? i : b, -1);
   const cur = byHeader(KW.cur, [date], i => numScore(i) < half);
-  const fx = byHeader(KW.fx, [date, cur], i => numScore(i) >= half);
+  const fx = byHeader(KW.fx, [date, cur], i => numScore(i) >= 1);
   let twd = byHeader(/新臺幣|新台幣|台幣|臺幣|入帳金額|NT/i, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
   if (twd < 0) twd = byHeader(KW.twd, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
   if (twd < 0) twd = idx.filter(i => ![date, cur, fx].includes(i)).reduce((b, i) => numScore(i) > (b < 0 ? 0 : numScore(b)) ? i : b, -1);
@@ -2171,12 +2329,19 @@ function guessBillMapping(rows) {
 async function openBillImport(file) {
   let parsed;
   try { parsed = await readBillRows(file); }
-  catch (e) { toast(e.message === 'sheetjs' ? 'Excel 解析元件載入失敗，請改存成 CSV 再匯入' : '讀不到這個檔案'); return; }
-  if (!parsed.rows.length) { toast('檔案裡沒有資料'); return; }
+  catch (e) {
+    if (e.message === 'cancel') return;
+    toast({ sheetjs: 'Excel 解析元件載入失敗，請改存成 CSV 再匯入', pdfjs: 'PDF 解析元件載入失敗，請確認有網路，或改用「貼上明細文字」', password: '密碼錯太多次了' }[e.message] || '讀不到這個檔案');
+    return;
+  }
+  if (!parsed.rows.length) { toast(parsed.enc === 'PDF' ? 'PDF 裡找不到消費明細，試試「貼上明細文字」' : '檔案裡沒有資料'); return; }
+  openBillReview(parsed, file.name);
+}
+function openBillReview(parsed, name) {
   const g = guessBillMapping(parsed.rows);
   const dates = trip.ledger.concat(trip.expenses).map(e => e.date).sort();
   const st = {
-    map: g.map, method: /line/i.test(file.name) ? 'LINE Pay' : '信用卡',
+    map: g.map, method: /line/i.test(name) ? 'LINE Pay' : '信用卡',
     from: dates[0] || '', to: dates[dates.length - 1] || '', items: [], picked: new Set(), cats: {}
   };
   const dataRows = parsed.rows.slice(g.headerIndex + 1);
@@ -2187,7 +2352,7 @@ async function openBillImport(file) {
   const modal = openModal('sheet', `
     <div class="grab"></div>
     <div class="sheet-head"><h2>匯入帳單到記帳本</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
-    <p class="tiny muted" style="margin:0 0 10px">${esc(file.name)} · ${parsed.enc} · ${dataRows.length} 列。欄位是自動判斷的，不對可以改。</p>
+    <p class="tiny muted" style="margin:0 0 10px">${esc(name)} · ${parsed.enc} · ${dataRows.length} 列。欄位是自動判斷的，不對可以改。</p>
     <div class="imp-map">
       <label class="field"><span class="label">日期欄</span><select class="input" data-map="date">${colOptions(st.map.date)}</select></label>
       <label class="field"><span class="label">說明／店名欄</span><select class="input" data-map="desc">${colOptions(st.map.desc)}</select></label>
@@ -2195,7 +2360,7 @@ async function openBillImport(file) {
       <label class="field"><span class="label">外幣金額欄（選填）</span><select class="input" data-map="fx">${colOptions(st.map.fx, true)}</select></label>
     </div>
     <div class="imp-opts" style="margin-top:12px">
-      <label class="field"><span class="label">付款方式</span><select class="input" data-opt="method">${METHODS.map(m => `<option ${m === st.method ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
+      <label class="field"><span class="label">付款方式（明細有標 Apple Pay／LINE Pay 的會自動套用）</span><select class="input" data-opt="method">${METHODS.map(m => `<option ${m === st.method ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
       <div class="field span2"><span class="label">旅行日期（範圍內的消費會自動勾選）</span>
         <div class="row"><input class="input" type="date" data-opt="from" value="${st.from}" aria-label="開始日期"><input class="input" type="date" data-opt="to" value="${st.to}" aria-label="結束日期"></div></div>
     </div>
@@ -2205,6 +2370,7 @@ async function openBillImport(file) {
     <button class="btn primary big" style="margin-top:12px" data-act="do-import"></button>`);
   const box = modal.box;
   st.curCol = st.map.cur;
+  const methodCol = g.header ? g.header.indexOf('行動支付') : -1;   // 玉山明細裡標的 Apple Pay／LINE Pay
 
   function buildItems() {
     st.items = [];
@@ -2217,7 +2383,8 @@ async function openBillImport(file) {
       const fxCurRaw = st.curCol >= 0 ? (r[st.curCol] || '') : '';
       const fxCur = (parseMoney(fxCurRaw + ' 1') || {}).currency || null;
       const dup = trip.ledger.some(e => e.date === date && Math.abs(e.twd - twd) < 1);
-      st.items.push({ i, date, desc, twd, fxAmt, fxCur, dup });
+      const rowMethod = methodCol >= 0 && METHODS.includes(r[methodCol]) ? r[methodCol] : '';
+      st.items.push({ i, date, desc, twd, fxAmt, fxCur, dup, method: rowMethod });
       if (!(i in st.cats)) st.cats[i] = guessCategory(desc) || '其他';
     });
     autoPick();
@@ -2233,7 +2400,7 @@ async function openBillImport(file) {
         <input type="checkbox" data-pick="${it.i}" ${st.picked.has(it.i) ? 'checked' : ''}>
         <div style="min-width:0"><div class="desc">${esc(it.desc)}</div><div class="d num">${it.date}${it.fxAmt > 0 ? ' · 外幣 ' + it.fxAmt.toLocaleString('en-US') + (it.fxCur ? ' ' + it.fxCur : '') : ''}</div></div>
         <div class="amt num">${fmtTWD(it.twd)}</div>
-        <div class="sub"><select data-icat="${it.i}" aria-label="類別">${CATEGORIES.map(c => `<option ${c === st.cats[it.i] ? 'selected' : ''}>${c}</option>`).join('')}</select>${it.dup ? '<span class="badge warn">可能已記過</span>' : ''}</div>
+        <div class="sub"><select data-icat="${it.i}" aria-label="類別">${CATEGORIES.map(c => `<option ${c === st.cats[it.i] ? 'selected' : ''}>${c}</option>`).join('')}</select>${it.method ? `<span class="badge">${methodTag(it.method)}</span>` : ''}${it.dup ? '<span class="badge warn">可能已記過</span>' : ''}</div>
       </label>`).join('');
     updateFooter();
   }
@@ -2263,7 +2430,7 @@ async function openBillImport(file) {
           id: newId('l', trip.ledger), date: it.date, title: it.desc.slice(0, 40), category: st.cats[it.i] || '其他',
           amount: useFx ? it.fxAmt : it.twd, currency: useFx ? it.fxCur : 'TWD',
           rate: useFx ? Number((it.twd / it.fxAmt).toPrecision(6)) : 1,
-          twd: round2(it.twd), method: st.method, splitId: null
+          twd: round2(it.twd), method: it.method || st.method, splitId: null
         });
       }
       saveTrip(); modal.close(); renderAll(); go('ledger-list');
@@ -2273,8 +2440,34 @@ async function openBillImport(file) {
   buildItems(); renderList();
 }
 document.addEventListener('click', e => {
-  if (e.target.closest('[data-act=import-bill]')) $('#billFile').click();
+  if (e.target.closest('[data-act=import-bill]')) openImportChooser();
 });
+function openImportChooser() {
+  const modal = openModal('sheet', `
+    <div class="grab"></div>
+    <div class="sheet-head"><h2>匯入帳單到記帳本</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    <div class="card tint-mizu" style="box-shadow:none">
+      <h3>方法一：選帳單檔案</h3>
+      <p class="tiny muted" style="margin:0 0 10px">支援 PDF、Excel（.xlsx／.xls）、CSV。玉山信用卡：電子帳單 e-mail 的附檔可以直接選；有設密碼的 PDF 會請你輸入密碼。</p>
+      <button class="btn mizu" data-act="pick-file">選擇檔案</button>
+    </div>
+    <div class="card tint-yellow" style="box-shadow:none;margin-top:14px">
+      <h3>方法二：貼上明細文字</h3>
+      <p class="tiny muted" style="margin:0 0 10px">在玉山網路銀行或 App 的「刷卡明細」、或 PDF 帳單裡，把消費明細整段選起來複製，貼在下面。一行一筆，有日期和金額就讀得到。</p>
+      <textarea class="input" data-paste rows="6" style="min-height:140px;font-size:14px;line-height:1.5" placeholder="10/12 10/14 LAWSON SHINJUKU JP JPY 1,280 254&#10;10/13 10/15 APA HOTEL JP JPY 24,000 4,760"></textarea>
+      <button class="btn primary" style="margin-top:10px" data-act="parse-paste">讀取貼上的明細</button>
+    </div>`);
+  modal.box.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.act === 'pick-file') { modal.close(); $('#billFile').click(); }
+    if (b.dataset.act === 'parse-paste') {
+      const rows = parseStatementText($('[data-paste]', modal.box).value);
+      if (!rows.length) { toast('找不到有日期和金額的明細，確認每行都有日期（例如 10/12）和金額'); return; }
+      modal.close();
+      openBillReview({ rows, enc: parseStatementRecords($('[data-paste]', modal.box).value).length ? '玉山網銀明細格式' : '一行一筆格式' }, '貼上的明細');
+    }
+  });
+}
 $('#billFile').addEventListener('change', e => {
   const f = e.target.files[0]; e.target.value = '';
   if (f) openBillImport(f);
@@ -2316,10 +2509,10 @@ function confirmDialog({ title, message, ok = '確定', cancel = '取消', dange
     $('[data-ok]', m.box).addEventListener('click', () => m.close(true));
   });
 }
-function promptDialog({ title, message, value = '', ok = '確定' }) {
+function promptDialog({ title, message, value = '', ok = '確定', type = 'number' }) {
   return new Promise(resolve => {
     const m = openModal('dialog', `<h2>${esc(title)}</h2><p>${esc(message)}</p>
-      <form data-f><input class="input num" inputmode="decimal" value="${esc(value)}" aria-label="${esc(title)}">
+      <form data-f><input class="input num" ${type === 'password' ? 'type="password" autocomplete="off"' : 'inputmode="decimal"'} value="${esc(value)}" aria-label="${esc(title)}">
       <div class="actions"><button type="button" class="btn" data-close>取消</button><button type="submit" class="btn primary">${esc(ok)}</button></div></form>`);
     const input = $('input', m.box);
     m.onClose = r => resolve(typeof r === 'string' ? r : null);
@@ -2396,7 +2589,7 @@ document.addEventListener('click', e => {
    ========================================================= */
 function renderTripName() {
   $$('[data-trip-name]').forEach(el => el.textContent = trip.tripName);
-  document.title = `${trip.tripName}｜旅帳本 TripSplit`;
+  document.title = `${trip.tripName}｜旅行好記`;
 }
 function renderRates() {
   renderRateCard('ledger'); renderRateCard('split');
