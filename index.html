@@ -288,7 +288,7 @@ footer a{color:var(--ink)}
   .total-chip b{font-size:18px}
   .cols{display:grid;grid-template-columns:410px minmax(0,1fr);gap:28px;align-items:start}
   .cols>.col+.col{margin-top:0}
-  #page-add .side,#page-list .side{position:sticky;top:104px}
+  
   .hero-title{font-size:28px}
   .amount-box select.input{width:160px}
   .amount-box .amount{font-size:28px}
@@ -332,6 +332,77 @@ footer a{color:var(--ink)}
   *,*::before,*::after{animation:none!important;transition:none!important}
   html{scroll-behavior:auto}
 }
+
+/* =========================================================
+   v4：記帳本／分帳本 兩本
+   ========================================================= */
+/* 頂部：品牌、兩本切換、總額 */
+.topbar{flex-wrap:wrap;row-gap:12px}
+.mode-switch{order:3;width:100%;display:grid;grid-template-columns:1fr 1fr;gap:4px;padding:4px;background:var(--card);border:var(--bw) solid var(--ink);border-radius:999px;box-shadow:0 3px 0 var(--ink)}
+.mode-btn{display:flex;align-items:center;justify-content:center;gap:6px;min-height:42px;border:2.5px solid transparent;border-radius:999px;background:none;cursor:pointer;font-size:16px;color:var(--ink-2);transition:background .15s,transform .08s}
+.mode-btn svg{width:24px;height:24px}
+.mode-btn:active{transform:scale(.96)}
+.mode-btn[aria-pressed="true"]{border-color:var(--ink);color:var(--ink)}
+.mode-btn[data-mode="ledger"][aria-pressed="true"]{background:var(--yellow)}
+.mode-btn[data-mode="split"][aria-pressed="true"]{background:var(--green)}
+.total-chip span{color:var(--ink-2)}
+
+/* 付款方式 */
+.chip.method[aria-pressed="true"]{background:var(--mizu)}
+.method-tag{display:inline-flex;align-items:center;gap:3px;vertical-align:-3px}
+.method-tag svg{width:16px;height:16px}
+.split-toggle{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:10px 12px;border:2.5px dashed var(--ink);border-radius:var(--r);background:var(--green-l)}
+.split-toggle .chip[aria-pressed="true"]{background:var(--green)}
+.split-toggle.disabled .chip{opacity:.5;pointer-events:none}
+.split-area{padding:12px;border:2.5px solid var(--ink);border-radius:var(--r);background:var(--green-l)}
+.split-area>*+*{margin-top:12px}
+
+/* 明細：已分帳標記、多選 */
+.exp.ledger{grid-template-columns:44px minmax(0,1fr) auto auto}
+.linked-mark{display:grid;place-items:center;width:34px;height:34px;justify-self:center;border:2.5px solid var(--ink);border-radius:50%;background:var(--green);font-size:17px;color:var(--ink)}
+.split-btn{min-height:34px;padding:0 10px 0 6px;gap:3px;font-size:13.5px;box-shadow:0 2px 0 var(--ink)}
+.split-btn svg{width:20px;height:20px}
+.linked-mark svg,.exp .icon-btn.split svg{width:20px;height:20px}
+.exp .icon-btn.split{background:var(--green-l)}
+.pick-box{display:grid;place-items:center;width:30px;height:30px;justify-self:center;border:2.5px solid var(--ink);border-radius:9px;background:var(--card);font-size:18px}
+.exp.picked{background:var(--green-l)}
+.exp.picked .pick-box{background:var(--green)}
+.exp.selecting.linked{opacity:.45;cursor:not-allowed}
+.list-tools{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px}
+.bulk-bar{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(96px + env(safe-area-inset-bottom));width:calc(100% - 24px);max-width:456px;display:flex;align-items:center;gap:8px;padding:8px 8px 8px 16px;background:var(--green-l);border:var(--bw) solid var(--ink);border-radius:999px;box-shadow:var(--lift);z-index:25;animation:pop .25s cubic-bezier(.2,1.5,.4,1)}
+.bulk-bar .txt{flex:1;font-size:14px;line-height:1.3;min-width:0}
+.badge.green{background:var(--green-l)}
+.badge.split-src{background:var(--yellow-l)}
+
+/* 統計 */
+.kv{display:grid;grid-template-columns:1fr auto;gap:8px 12px;align-items:baseline;font-size:15px}
+.kv .big{font-size:26px}
+.kv hr{grid-column:1/-1;border:0;border-top:2px dashed var(--ink-3);margin:2px 0;width:100%}
+.bars{list-style:none;margin:0;padding:0}
+.bars li{display:grid;grid-template-columns:96px 1fr auto;gap:10px;align-items:center;padding:5px 0;font-size:14px}
+.bars .lbl{display:flex;align-items:center;gap:6px;white-space:nowrap;overflow:hidden}
+.bars .lbl svg{width:20px;height:20px;flex:none}
+.bars .track{height:16px;border:2px solid var(--ink);border-radius:999px;background:var(--card);overflow:hidden}
+.bars .fill{height:100%;border-right:2px solid var(--ink)}
+.bars .v{text-align:right;white-space:nowrap}
+.hint-link{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:12px 16px}
+
+@media (min-width:600px) and (max-width:899px){
+  .bulk-bar{max-width:616px}
+}
+@media (min-width:900px){
+  .topbar{display:grid;grid-template-columns:1fr auto 1fr;align-items:center;row-gap:12px}
+  .topbar .brand{justify-self:start}
+  .topbar .total-chip{justify-self:end}
+  .mode-switch{order:0;width:340px}
+  .tabbar{grid-column:1/-1;justify-self:center}
+  .bulk-bar{bottom:28px;max-width:560px}
+  .bars li{grid-template-columns:120px 1fr auto}
+}
+.split-toggle .chip[aria-pressed="true"] .tick{display:inline}
+body:has(#bulkBar) .toast{bottom:calc(172px + env(safe-area-inset-bottom))}
+@media (min-width:900px){body:has(#bulkBar) .toast{bottom:104px}}
+@media (min-width:900px){#page-ledger-add .side,#page-split-add .side,#page-ledger-list .side,#page-split-list .side{position:sticky;top:160px}}
 </style>
 </head>
 <body>
@@ -341,140 +412,204 @@ footer a{color:var(--ink)}
       <svg width="34" height="34" viewBox="0 0 32 32" aria-hidden="true"><circle cx="16" cy="16" r="13" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><path d="M11 9l5 6 5-6M16 15v9M11.5 17h9M11.5 20.5h9" fill="none" stroke="#3E3A39" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
       <div>旅帳本<br><small>TRIPSPLIT</small></div>
     </div>
-    <nav class="tabbar" aria-label="主選單">
-      <button class="tab" id="tab-add" data-tab="add">
-        <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="3" width="14" height="19" rx="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.2"/><path d="M7 9h6M7 13h6" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/><path d="M14 21l8-10 2.4 1.8-8 10-3.4.8Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.2" stroke-linejoin="round"/></svg>
-        記帳
+    <div class="mode-switch" role="group" aria-label="切換記帳本或分帳本">
+      <button class="mode-btn" data-mode="ledger" aria-pressed="true">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="4" y="3" width="16" height="20" rx="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.2"/><path d="M8 3v20" stroke="#F2A497" stroke-width="2.2"/><path d="M11 9h6M11 13h6" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/></svg>
+        記帳本
       </button>
-      <button class="tab" id="tab-list" data-tab="list">
-        <svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="4" width="20" height="18" rx="4" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2.2"/><circle cx="8" cy="10" r="1.6" fill="#3E3A39"/><circle cx="8" cy="16" r="1.6" fill="#3E3A39"/><path d="M12 10h7M12 16h7" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/></svg>
-        明細
+      <button class="mode-btn" data-mode="split" aria-pressed="false">
+        <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="9" cy="10" r="5" fill="#F2A497" stroke="#3E3A39" stroke-width="2.2"/><circle cx="17" cy="10" r="5" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2.2"/><path d="M3 22q6-7 12 0M11 22q6-7 12 0" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/></svg>
+        分帳本
       </button>
-      <button class="tab" id="tab-settle" data-tab="settle">
-        <svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="9" cy="14" r="6.5" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.2"/><circle cx="17" cy="11" r="6.5" fill="#B9DAA5" stroke="#3E3A39" stroke-width="2.2"/><path d="M14 11h6M17.5 8.5L20 11l-2.5 2.5" fill="none" stroke="#3E3A39" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        結算
-      </button>
-      <button class="tab" id="tab-settings" data-tab="settings">
-        <svg viewBox="0 0 26 26" aria-hidden="true"><path d="M9.5 7V4.5h7V7" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linejoin="round"/><rect x="3" y="7" width="20" height="15" rx="4" fill="#F2A497" stroke="#3E3A39" stroke-width="2.2"/><path d="M3 13h20" stroke="#3E3A39" stroke-width="2.2"/></svg>
-        設定
-      </button>
-    </nav>
-    <div class="total-chip" aria-live="polite">總花費 <b class="num" id="topTotal">NT$0</b></div>
+    </div>
+    <div class="total-chip" aria-live="polite"><span id="topLabel">我的花費</span> <b class="num" id="topTotal">NT$0</b></div>
+    <nav class="tabbar" id="tabbar" aria-label="主選單"></nav>
   </header>
 
-  <!-- ================= 記帳 ================= -->
-  <section class="page" id="page-add" aria-labelledby="tab-add">
+  <!-- ================= 記帳本：記一筆 ================= -->
+  <section class="page" id="page-ledger-add">
     <div class="cols">
-    <div class="col side stack">
-      <div class="hero">
-        <div class="art">
-          <svg viewBox="0 0 360 150" aria-hidden="true">
-            <rect width="360" height="150" fill="#DDEEF5"/>
-            <g transform="translate(312 36)">
-              <g class="sun-rays" stroke="#3E3A39" stroke-width="3" stroke-linecap="round">
-                <path d="M0 -27v-6M0 27v6M-27 0h-6M27 0h6M-19 -19l-4 -4M19 19l4 4M-19 19l-4 4M19 -19l4 -4"/>
+      <div class="col side stack">
+        <div class="hero">
+          <div class="art">
+            <svg viewBox="0 0 360 150" aria-hidden="true">
+              <rect width="360" height="150" fill="#DDEEF5"/>
+              <g transform="translate(312 36)">
+                <g class="sun-rays" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"><path d="M0 -27v-6M0 27v6M-27 0h-6M27 0h6M-19 -19l-4 -4M19 19l4 4M-19 19l-4 4M19 -19l4 -4"/></g>
+                <circle r="17" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
+                <circle cx="-6" cy="-1" r="1.8" fill="#3E3A39"/><circle cx="6" cy="-1" r="1.8" fill="#3E3A39"/>
+                <path d="M-4 5q4 3.5 8 0" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/>
               </g>
-              <circle r="17" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
-              <circle cx="-6" cy="-1" r="1.8" fill="#3E3A39"/><circle cx="6" cy="-1" r="1.8" fill="#3E3A39"/>
-              <path d="M-4 5q4 3.5 8 0" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/>
-            </g>
-            <g class="cloud-a"><path transform="translate(22 14)" d="M10 30H50a10 10 0 0 0 0-20a14 14 0 0 0-26-4a10 10 0 0 0-14 10a7 7 0 0 0 0 14Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/></g>
-            <g class="cloud-b"><path transform="translate(168 12) scale(.72)" d="M10 30H50a10 10 0 0 0 0-20a14 14 0 0 0-26-4a10 10 0 0 0-14 10a7 7 0 0 0 0 14Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="4" stroke-linejoin="round"/></g>
-            <path d="M202 128L262 68L322 128Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M247 83L262 68L277 83L270 89L262 82L254 89Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M24 122C80 64 150 104 222 56" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="3 8" stroke-linecap="round"/>
-            <g transform="translate(238 47) rotate(-26)">
-              <g class="plane">
-                <path d="M-6 -6L-16 -22H-9L6 -6Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M-22 0Q-22 -7 -10 -7H15Q26 -7 26 0Q26 7 15 7H-10Q-22 7 -22 0Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M-18 -5L-24 -15H-18L-10 -6" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M-6 6L-14 18H-7L6 6Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-                <circle cx="17" cy="-1" r="2" fill="#3E3A39"/><circle cx="9" cy="-1" r="2" fill="#3E3A39"/><circle cx="1" cy="-1" r="2" fill="#3E3A39"/>
+              <g class="cloud-a"><path transform="translate(22 14)" d="M10 30H50a10 10 0 0 0 0-20a14 14 0 0 0-26-4a10 10 0 0 0-14 10a7 7 0 0 0 0 14Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/></g>
+              <g class="cloud-b"><path transform="translate(168 12) scale(.72)" d="M10 30H50a10 10 0 0 0 0-20a14 14 0 0 0-26-4a10 10 0 0 0-14 10a7 7 0 0 0 0 14Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="4" stroke-linejoin="round"/></g>
+              <path d="M202 128L262 68L322 128Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M247 83L262 68L277 83L270 89L262 82L254 89Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M24 122C80 64 150 104 222 56" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-dasharray="3 8" stroke-linecap="round"/>
+              <g transform="translate(238 47) rotate(-26)">
+                <g class="plane">
+                  <path d="M-6 -6L-16 -22H-9L6 -6Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                  <path d="M-22 0Q-22 -7 -10 -7H15Q26 -7 26 0Q26 7 15 7H-10Q-22 7 -22 0Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                  <path d="M-18 -5L-24 -15H-18L-10 -6" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                  <path d="M-6 6L-14 18H-7L6 6Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                  <circle cx="17" cy="-1" r="2" fill="#3E3A39"/><circle cx="9" cy="-1" r="2" fill="#3E3A39"/><circle cx="1" cy="-1" r="2" fill="#3E3A39"/>
+                </g>
               </g>
-            </g>
-            <path d="M-4 130Q60 104 132 124T268 120T364 116V154H-4Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <g transform="translate(150 98)"><g class="sway"><path d="M0 26V8" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="4" r="9" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/></g></g>
-            <g transform="translate(30 90)">
-              <path d="M18 8V1H36V8" fill="none" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-              <rect y="8" width="54" height="40" rx="9" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/>
-              <path d="M13 8V48M41 8V48" stroke="#3E3A39" stroke-width="3"/>
-              <circle cx="27" cy="27" r="7" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5"/>
-              <circle cx="10" cy="52" r="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="44" cy="52" r="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
-            </g>
-            <g transform="translate(300 140)">
-              <path d="M-20 -8v-6a20 7 0 0 0 40 0v6a20 7 0 0 1-40 0Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-              <path d="M-20 -18v-6a20 7 0 0 0 40 0v6a20 7 0 0 1-40 0Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-              <ellipse cy="-24" rx="20" ry="7" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
-              <g class="hop"><circle cx="2" cy="-50" r="15" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><path d="M-3 -57l5 6 5-6M2 -51v8M-2.5 -49h9M-2.5 -45.5h9" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
-            </g>
-          </svg>
-        </div>
-        <div class="hero-body">
-          <h1 class="hero-title" id="heroTitle">我的旅程</h1>
-          <div class="hero-meta">
-            <div class="hero-total">總花費（台幣）<b class="num" id="heroTotal">NT$0</b><span id="heroCount">0 筆帳目</span></div>
-            <div class="faces" id="heroFaces"></div>
+              <path d="M-4 130Q60 104 132 124T268 120T364 116V154H-4Z" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <g transform="translate(150 98)"><g class="sway"><path d="M0 26V8" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/><circle cx="0" cy="4" r="9" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/></g></g>
+              <g transform="translate(30 90)">
+                <path d="M18 8V1H36V8" fill="none" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                <rect y="8" width="54" height="40" rx="9" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/>
+                <path d="M13 8V48M41 8V48" stroke="#3E3A39" stroke-width="3"/>
+                <circle cx="27" cy="27" r="7" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5"/>
+                <circle cx="10" cy="52" r="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="44" cy="52" r="3.5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+              </g>
+              <g transform="translate(300 140)">
+                <path d="M-20 -8v-6a20 7 0 0 0 40 0v6a20 7 0 0 1-40 0Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                <path d="M-20 -18v-6a20 7 0 0 0 40 0v6a20 7 0 0 1-40 0Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+                <ellipse cy="-24" rx="20" ry="7" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
+                <g class="hop"><circle cx="2" cy="-50" r="15" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/><path d="M-3 -57l5 6 5-6M2 -51v8M-2.5 -49h9M-2.5 -45.5h9" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></g>
+              </g>
+            </svg>
+          </div>
+          <div class="hero-body">
+            <h1 class="hero-title" data-trip-name>我的旅程</h1>
+            <div class="hero-meta">
+              <div class="hero-total">記帳本・我的花費（台幣）<b class="num" id="ledgerHeroTotal">NT$0</b><span id="ledgerHeroCount">0 筆</span></div>
+            </div>
           </div>
         </div>
+        <div class="card tint-mizu rate-card" id="rateCard-ledger" data-book="ledger"></div>
       </div>
-
-      <div class="card tint-mizu rate-card" id="rateCard"></div>
-    </div>
-    <div class="col main stack">
-
-      <div class="card" id="addCard">
-        <h2>
-          <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="18" height="24" rx="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><path d="M10 11h8M10 16h8M10 21h5" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/><path d="M19 26l9-12 3 2-9 12-4 1Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round"/></svg>
-          記一筆
-        </h2>
-        <div id="addFormHost"></div>
+      <div class="col main stack">
+        <div class="card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 32 32" aria-hidden="true"><rect x="5" y="4" width="18" height="24" rx="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><path d="M10 11h8M10 16h8M10 21h5" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/><path d="M19 26l9-12 3 2-9 12-4 1Z" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.5" stroke-linejoin="round"/></svg>
+            記一筆（我的花費）
+          </h2>
+          <div id="ledgerFormHost"></div>
+        </div>
+        <div class="card hint-link">
+          <div><div>刷卡、LINE Pay 回國再一次匯入</div><div class="tiny muted">支援信用卡帳單、行動支付的 CSV／Excel</div></div>
+          <button class="btn mizu small" data-act="import-bill">匯入帳單</button>
+        </div>
+        <div class="card hint-link">
+          <div><div>刷 Apple Pay 自動帶入</div><div class="tiny muted">用 iPhone「捷徑」設定一次就好</div></div>
+          <button class="btn small" data-go="settings" data-scroll="applepayCard">看設定方法</button>
+        </div>
       </div>
     </div>
-  </div>
   </section>
 
-  <!-- ================= 明細 ================= -->
-  <section class="page" id="page-list" aria-labelledby="tab-list">
+  <!-- ================= 記帳本：明細 ================= -->
+  <section class="page" id="page-ledger-list">
     <div class="cols">
-    <div class="col side stack">
-      <div class="art" style="background:var(--yellow-l)">
-        <svg viewBox="0 0 360 112" aria-hidden="true">
-          <rect width="360" height="112" fill="#FCF0CF"/>
-          <g transform="rotate(-5 90 60)">
-            <rect x="34" y="18" width="118" height="80" rx="10" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3"/>
-            <path d="M58 18V98" stroke="#F2A497" stroke-width="3"/>
-            <path d="M68 40H138M68 56H138M68 72H120" stroke="#A8D3E6" stroke-width="3" stroke-linecap="round"/>
-            <circle cx="46" cy="34" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="46" cy="58" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="46" cy="82" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
-          </g>
-          <g transform="translate(170 14)">
-            <path d="M0 0H58V82L51 76L44 82L37 76L29 82L22 76L15 82L8 76L0 82Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M10 16H48M10 28H38M10 40H44M10 56H48" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
-                      </g>
-          <g transform="translate(270 54)">
-            <g class="steam"><path d="M-8 -22q-4 -6 0 -12M2 -24q-4 -6 0 -12M12 -22q-4 -6 0 -12" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/></g>
-            <path d="M-26 -8H30Q30 26 2 26Q-26 26 -26 -8Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <path d="M-18 -8q4 -8 8 0q4 -8 8 0q4 -8 8 0q4 -8 8 0" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
-            <circle cx="-6" cy="8" r="5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><path d="M-6 8m-2 0a2 2 0 1 0 2 -2" fill="none" stroke="#F2A497" stroke-width="2"/>
-            <path d="M10 -30L36 -2M18 -34L40 -8" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/>
-          </g>
-          <g transform="translate(330 76)"><g class="hop">
-            <path d="M0 -20Q4 -20 16 2Q20 10 12 12H-12Q-20 10 -16 2Q-4 -20 0 -20Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <rect x="-7" y="2" width="14" height="10" rx="2" fill="#3E3A39"/>
-          </g></g>
-        </svg>
+      <div class="col side stack">
+        <div class="art" style="background:var(--yellow-l)">
+          <svg viewBox="0 0 360 112" aria-hidden="true">
+            <rect width="360" height="112" fill="#FCF0CF"/>
+            <g transform="rotate(-5 90 60)">
+              <rect x="34" y="18" width="118" height="80" rx="10" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3"/>
+              <path d="M58 18V98" stroke="#F2A497" stroke-width="3"/>
+              <path d="M68 40H138M68 56H138M68 72H120" stroke="#A8D3E6" stroke-width="3" stroke-linecap="round"/>
+              <circle cx="46" cy="34" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="46" cy="58" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/><circle cx="46" cy="82" r="4" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+            </g>
+            <g transform="translate(170 14)">
+              <path d="M0 0H58V82L51 76L44 82L37 76L29 82L22 76L15 82L8 76L0 82Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M10 16H48M10 28H38M10 40H44M10 56H48" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(270 54)">
+              <g class="steam"><path d="M-8 -22q-4 -6 0 -12M2 -24q-4 -6 0 -12M12 -22q-4 -6 0 -12" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/></g>
+              <path d="M-26 -8H30Q30 26 2 26Q-26 26 -26 -8Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M-18 -8q4 -8 8 0q4 -8 8 0q4 -8 8 0q4 -8 8 0" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
+              <circle cx="-6" cy="8" r="5" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+              <path d="M10 -30L36 -2M18 -34L40 -8" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(330 76)"><g class="hop">
+              <path d="M0 -20Q4 -20 16 2Q20 10 12 12H-12Q-20 10 -16 2Q-4 -20 0 -20Z" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <rect x="-7" y="2" width="14" height="10" rx="2" fill="#3E3A39"/>
+            </g></g>
+          </svg>
+        </div>
+        <div class="card tint-yellow" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div><div class="muted tiny">記帳本・我的花費（台幣）</div><div class="num" style="font-size:28px;line-height:1.2" id="ledgerListTotal">NT$0</div></div>
+          <div class="muted tiny" style="text-align:right" id="ledgerListCount">0 筆</div>
+        </div>
+        <button class="btn mizu" style="width:100%" data-act="import-bill">匯入信用卡／行動支付帳單</button>
       </div>
-      <div class="card tint-yellow" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
-        <div><div class="muted tiny">總花費（台幣）</div><div class="num" style="font-size:28px;line-height:1.2" id="listTotal">NT$0</div></div>
-        <div class="muted tiny" style="text-align:right" id="listCount">0 筆</div>
-      </div>
-      <button class="btn mizu" style="width:100%" data-act="import-bill">匯入信用卡／行動支付帳單</button>
-    </div>
-    <div class="col main"><div id="listHost"></div></div>
+      <div class="col main" id="ledgerListHost"></div>
     </div>
   </section>
 
-  <!-- ================= 結算 ================= -->
-  <section class="page" id="page-settle" aria-labelledby="tab-settle">
+  <!-- ================= 記帳本：統計 ================= -->
+  <section class="page" id="page-ledger-stats">
+    <div class="cols">
+      <div class="col side stack">
+        <div class="art" style="background:var(--mizu-l)">
+          <svg viewBox="0 0 360 112" aria-hidden="true">
+            <rect width="360" height="112" fill="#DDEEF5"/>
+            <path d="M40 96H220" stroke="#3E3A39" stroke-width="3" stroke-linecap="round"/>
+            <rect x="58" y="52" width="30" height="44" rx="6" fill="#F2A497" stroke="#3E3A39" stroke-width="3"/>
+            <rect x="104" y="30" width="30" height="66" rx="6" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
+            <rect x="150" y="64" width="30" height="32" rx="6" fill="#B9DAA5" stroke="#3E3A39" stroke-width="3"/>
+            <g transform="translate(282 58)">
+              <circle r="34" fill="#FFFCF6" stroke="#3E3A39" stroke-width="3"/>
+              <path d="M0 0V-34A34 34 0 0 1 32 11Z" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <path d="M0 0L32 11A34 34 0 0 1 -12 32Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+            </g>
+            <g class="hop"><circle cx="119" cy="16" r="10" fill="#F6D27A" stroke="#3E3A39" stroke-width="2.6"/></g>
+          </svg>
+        </div>
+        <div id="statsSide"></div>
+      </div>
+      <div class="col main stack" id="statsMain"></div>
+    </div>
+  </section>
+
+  <!-- ================= 分帳本：記一筆 ================= -->
+  <section class="page" id="page-split-add">
+    <div class="cols">
+      <div class="col side stack">
+        <div class="hero">
+          <div class="art" style="background:var(--green-l)" id="splitHeroArt"></div>
+          <div class="hero-body">
+            <h1 class="hero-title" data-trip-name>我的旅程</h1>
+            <div class="hero-meta">
+              <div class="hero-total">分帳本・共同花費（台幣）<b class="num" id="splitHeroTotal">NT$0</b><span id="splitHeroCount">0 筆</span></div>
+              <div class="faces" id="splitHeroFaces"></div>
+            </div>
+          </div>
+        </div>
+        <div class="card tint-mizu rate-card" id="rateCard-split" data-book="split"></div>
+      </div>
+      <div class="col main stack">
+        <div class="card">
+          <h2>
+            <svg width="28" height="28" viewBox="0 0 26 26" aria-hidden="true"><circle cx="9" cy="10" r="5" fill="#F2A497" stroke="#3E3A39" stroke-width="2.2"/><circle cx="17" cy="10" r="5" fill="#A8D3E6" stroke="#3E3A39" stroke-width="2.2"/><path d="M3 22q6-7 12 0M11 22q6-7 12 0" fill="none" stroke="#3E3A39" stroke-width="2.2" stroke-linecap="round"/></svg>
+            記一筆（大家要分的）
+          </h2>
+          <p class="tiny muted" style="margin:-4px 0 12px">別人幫大家付的錢記在這裡；你自己付的，也可以在記帳本勾「也放進分帳本」。</p>
+          <div id="splitFormHost"></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ================= 分帳本：明細 ================= -->
+  <section class="page" id="page-split-list">
+    <div class="cols">
+      <div class="col side stack">
+        <div class="art" style="background:var(--green-l)" id="splitListArt"></div>
+        <div class="card tint-green" style="display:flex;justify-content:space-between;align-items:center;gap:10px">
+          <div><div class="muted tiny">分帳本・共同花費（台幣）</div><div class="num" style="font-size:28px;line-height:1.2" id="splitListTotal">NT$0</div></div>
+          <div class="muted tiny" style="text-align:right" id="splitListCount">0 筆</div>
+        </div>
+      </div>
+      <div class="col main" id="splitListHost"></div>
+    </div>
+  </section>
+
+  <!-- ================= 分帳本：結算 ================= -->
+  <section class="page" id="page-split-settle">
     <div class="cols" id="settleHost">
       <div class="col side stack">
         <div class="art" style="background:var(--green-l)" id="settleArt"></div>
@@ -485,37 +620,37 @@ footer a{color:var(--ink)}
   </section>
 
   <!-- ================= 設定 ================= -->
-  <section class="page" id="page-settings" aria-labelledby="tab-settings">
+  <section class="page" id="page-settings">
     <div class="cols" id="settingsHost">
-    <div class="col side stack">
-      <div class="art" style="background:var(--coral-l)">
-        <svg viewBox="0 0 360 112" aria-hidden="true">
-          <rect width="360" height="112" fill="#FBE1DB"/>
-          <g transform="translate(40 22) rotate(-8 30 36)">
-            <rect width="60" height="78" rx="8" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/>
-            <circle cx="30" cy="32" r="15" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
-            <path d="M15 32H45M30 17Q20 32 30 47Q40 32 30 17" fill="none" stroke="#3E3A39" stroke-width="2.2"/>
-            <path d="M16 60H44" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
-          </g>
-          <g transform="translate(128 26)">
-            <path d="M24 10V2H52V10" fill="none" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <rect y="10" width="76" height="62" rx="12" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
-            <path d="M0 34H76" stroke="#3E3A39" stroke-width="3"/>
-            <rect x="30" y="28" width="16" height="12" rx="3" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
-            <circle cx="16" cy="56" r="7" fill="#F2A497" stroke="#3E3A39" stroke-width="2.5"/>
-            <path d="M52 50l4 6 8-8" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </g>
-          <g transform="translate(256 18)"><g class="hop">
-            <path d="M22 0C10 0 2 9 2 20C2 35 22 52 22 52S42 35 42 20C42 9 34 0 22 0Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
-            <circle cx="22" cy="20" r="8" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
-          </g></g>
-          <ellipse cx="278" cy="92" rx="26" ry="6" fill="#F2A497" opacity=".5"/>
-          <g id="settingsFaces" transform="translate(300 64)"></g>
-        </svg>
+      <div class="col side stack">
+        <div class="art" style="background:var(--coral-l)">
+          <svg viewBox="0 0 360 112" aria-hidden="true">
+            <rect width="360" height="112" fill="#FBE1DB"/>
+            <g transform="translate(40 22) rotate(-8 30 36)">
+              <rect width="60" height="78" rx="8" fill="#A8D3E6" stroke="#3E3A39" stroke-width="3"/>
+              <circle cx="30" cy="32" r="15" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+              <path d="M15 32H45M30 17Q20 32 30 47Q40 32 30 17" fill="none" stroke="#3E3A39" stroke-width="2.2"/>
+              <path d="M16 60H44" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round"/>
+            </g>
+            <g transform="translate(128 26)">
+              <path d="M24 10V2H52V10" fill="none" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <rect y="10" width="76" height="62" rx="12" fill="#F6D27A" stroke="#3E3A39" stroke-width="3"/>
+              <path d="M0 34H76" stroke="#3E3A39" stroke-width="3"/>
+              <rect x="30" y="28" width="16" height="12" rx="3" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+              <circle cx="16" cy="56" r="7" fill="#F2A497" stroke="#3E3A39" stroke-width="2.5"/>
+              <path d="M52 50l4 6 8-8" fill="none" stroke="#3E3A39" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </g>
+            <g transform="translate(256 18)"><g class="hop">
+              <path d="M22 0C10 0 2 9 2 20C2 35 22 52 22 52S42 35 42 20C42 9 34 0 22 0Z" fill="#F2A497" stroke="#3E3A39" stroke-width="3" stroke-linejoin="round"/>
+              <circle cx="22" cy="20" r="8" fill="#FFFCF6" stroke="#3E3A39" stroke-width="2.5"/>
+            </g></g>
+            <ellipse cx="278" cy="92" rx="26" ry="6" fill="#F2A497" opacity=".5"/>
+            <g id="settingsFaces" transform="translate(300 64)"></g>
+          </svg>
+        </div>
+        <div class="stack" id="settingsSide"></div>
       </div>
-      <div class="stack" id="settingsSide"></div>
-    </div>
-    <div class="col main stack" id="settingsMain"></div>
+      <div class="col main stack" id="settingsMain"></div>
     </div>
   </section>
 
@@ -525,10 +660,9 @@ footer a{color:var(--ink)}
   </footer>
 </div>
 
-
-
 <div class="toast" id="toast" role="status" aria-live="polite"></div>
 <input type="file" id="billFile" accept=".csv,.txt,.xlsx,.xls,text/csv" hidden>
+<input type="file" id="importFile" accept="application/json,.json" hidden>
 
 <noscript><p style="text-align:center;padding:20px">這個網頁需要開啟 JavaScript 才能使用。</p></noscript>
 
@@ -539,12 +673,11 @@ footer a{color:var(--ink)}
 /* =========================================================
    常數設定
    ========================================================= */
-const LS_TRIP = 'tripsplit.trip.v1';   // 旅程、成員、帳目
+const LS_TRIP = 'tripsplit.trip.v1';   // 旅程、成員、記帳本、分帳本
 const LS_RATES = 'tripsplit.rates.v1'; // 匯率快取
 const INK = '#3E3A39', PAPER = '#FFFCF6';
 const FETCH_TIMEOUT = 8000;            // 匯率 API 逾時 8 秒
 
-// 支援的幣別（code、中文名稱、符號）
 const CURRENCIES = [
   { code: 'JPY', name: '日圓', sym: '¥' },
   { code: 'KRW', name: '韓元', sym: '₩' },
@@ -563,18 +696,19 @@ const CURRENCIES = [
 ];
 const CUR = Object.fromEntries(CURRENCIES.map(c => [c.code, c]));
 
-// 帳目類別與對應顏色
 const CATEGORIES = ['餐飲', '交通', '住宿', '購物', '門票', '其他'];
 const CAT_COLOR = { 餐飲: '#F2A497', 交通: '#A8D3E6', 住宿: '#F6D27A', 購物: '#B9DAA5', 門票: '#FBE1DB', 其他: '#DDEEF5' };
 
-// 成員頭像顏色（最多 8 人）
+// 記帳本的付款方式
+const METHODS = ['現金', '信用卡', 'Apple Pay', 'LINE Pay', '其他'];
+const METHOD_COLOR = { 現金: '#B9DAA5', 信用卡: '#A8D3E6', 'Apple Pay': '#FBE1DB', 'LINE Pay': '#E4F0DC', 其他: '#FCF0CF' };
+
 const MEMBER_COLORS = ['#F2A497', '#A8D3E6', '#F6D27A', '#B9DAA5', '#FBE1DB', '#DDEEF5', '#FCF0CF', '#E4F0DC'];
 
 // 內建參考匯率：只有在「完全離線又沒有快取」時才用（1 外幣 ≈ ? 台幣，2026 年 7 月公開收盤價）
 const BUILTIN_TWD_PER = { USD: 31.91, CNY: 4.70, HKD: 4.0689, JPY: 0.1981, KRW: 0.0207 };
 const BUILTIN_LABEL = '2026 年 7 月';
 
-// 匯率來源：主要 + 兩個備援，依序嘗試
 const RATE_SOURCES = [
   {
     name: 'open.er-api.com',
@@ -585,18 +719,9 @@ const RATE_SOURCES = [
       return { perTwd: d.rates, time };
     }
   },
-  {
-    name: 'jsDelivr currency-api',
-    url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/twd.json',
-    parse: parseFawaz
-  },
-  {
-    name: 'currency-api.pages.dev',
-    url: 'https://latest.currency-api.pages.dev/v1/currencies/twd.json',
-    parse: parseFawaz
-  }
+  { name: 'jsDelivr currency-api', url: 'https://cdn.jsdelivr.net/npm/@fawazahmed0/currency-api@latest/v1/currencies/twd.json', parse: parseFawaz },
+  { name: 'currency-api.pages.dev', url: 'https://latest.currency-api.pages.dev/v1/currencies/twd.json', parse: parseFawaz }
 ];
-// fawazahmed0 格式：{ date, twd: { jpy: 5.05, ... } }，代碼是小寫
 function parseFawaz(d) {
   if (!d || !d.twd) throw new Error('bad format');
   const perTwd = {};
@@ -608,21 +733,20 @@ function parseFawaz(d) {
    小工具
    ========================================================= */
 const $ = (s, root = document) => root.querySelector(s);
+const $$ = (s, root = document) => [...root.querySelectorAll(s)];
 const pad = n => String(n).padStart(2, '0');
-const todayStr = () => { const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; };
+const ymd = d => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+const todayStr = () => ymd(new Date());
 const round2 = n => Math.round(n * 100) / 100;
 const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-// 把使用者輸入的金額字串轉數字（允許千分位逗號）
 const parseNum = s => { const n = Number(String(s ?? '').replace(/[,\s，]/g, '')); return Number.isFinite(n) ? n : NaN; };
-// 台幣顯示：四捨五入成整數、加千分位
 const fmtInt = n => { const v = Math.round(n); return (Object.is(v, -0) ? 0 : v).toLocaleString('en-US'); };
 const fmtTWD = n => 'NT$' + fmtInt(n);
-// 外幣顯示：符號 + 金額（最多兩位小數）
 const fmtFx = (amt, code) => (CUR[code]?.sym || code) + Number(amt).toLocaleString('en-US', { maximumFractionDigits: 2 });
-// 匯率數字：≥1 顯示小數 4 位，<1 顯示 4 位有效數字（日圓 0.1980、韓元 0.02071）
 const rateStr = r => r >= 1 ? r.toFixed(4) : r.toPrecision(4);
 const roundRate = r => Number(rateStr(r));
 const md = iso => { const d = new Date(iso); return isNaN(d) ? '' : `${d.getMonth() + 1}月${d.getDate()}日`; };
+const sum = (arr, f) => arr.reduce((s, x) => s + f(x), 0);
 function fmtWhen(s) {
   if (!s) return '';
   if (/^\d{4}-\d{2}-\d{2}$/.test(s)) { const [, m, d] = s.split('-'); return `${+m}/${+d}`; }
@@ -633,17 +757,36 @@ function weekday(dateStr) {
   const [y, m, d] = dateStr.split('-').map(Number);
   return '日一二三四五六'[new Date(y, m - 1, d).getDay()];
 }
+function dayLabel(date) { const [, m, d] = date.split('-'); return `${+m} 月 ${+d} 日（${weekday(date)}）`; }
 
 /* =========================================================
    資料讀寫（localStorage，全部包 try/catch）
+   trip = {
+     tripName, defaultCurrency, me, rateOverrides,
+     members: [{id, name, color}],
+     ledger:   記帳本 [{id, date, title, category, amount, currency, rate, twd, method, splitId}],
+     expenses: 分帳本 [{id, date, title, category, amount, currency, rate, twd, payerId, participantIds, ledgerId}]
+   }
    ========================================================= */
 let storageProblem = '';
 
 function emptyTrip() {
-  return { tripName: '我的旅程', defaultCurrency: 'JPY', members: [], expenses: [], rateOverrides: {}, me: null };
+  return { tripName: '我的旅程', defaultCurrency: 'JPY', members: [], expenses: [], ledger: [], rateOverrides: {}, me: null };
 }
 
-// 檢查並整理資料，壞掉的欄位補預設值、不合法的帳目丟掉
+function cleanMoney(e) {
+  const amount = Number(e.amount), rate = Number(e.rate);
+  if (!e || typeof e.id !== 'string' || !(amount > 0) || !(rate > 0) || !CUR[e.currency]) return null;
+  return {
+    id: e.id,
+    date: /^\d{4}-\d{2}-\d{2}$/.test(e.date) ? e.date : todayStr(),
+    title: String(e.title || e.category || '花費').slice(0, 40),
+    category: CATEGORIES.includes(e.category) ? e.category : '其他',
+    amount, currency: e.currency, rate,
+    twd: Number.isFinite(Number(e.twd)) ? Number(e.twd) : round2(amount * rate)
+  };
+}
+
 function normalizeTrip(d) {
   const t = emptyTrip();
   if (!d || typeof d !== 'object') return t;
@@ -658,26 +801,30 @@ function normalizeTrip(d) {
     }
   }
   const ids = new Set(t.members.map(m => m.id));
+  if (typeof d.me === 'string' && ids.has(d.me)) t.me = d.me;
   if (Array.isArray(d.expenses)) {
     for (const e of d.expenses) {
-      if (!e || typeof e.id !== 'string') continue;
-      const amount = Number(e.amount), rate = Number(e.rate);
-      if (!(amount > 0) || !(rate > 0) || !CUR[e.currency] || !ids.has(e.payerId)) continue;
+      const base = e && cleanMoney(e);
+      if (!base || !ids.has(e.payerId)) continue;
       const parts = Array.isArray(e.participantIds) ? e.participantIds.filter(id => ids.has(id)) : [];
       if (!parts.length) continue;
-      t.expenses.push({
-        id: e.id,
-        date: /^\d{4}-\d{2}-\d{2}$/.test(e.date) ? e.date : todayStr(),
-        title: String(e.title || e.category || '花費').slice(0, 40),
-        category: CATEGORIES.includes(e.category) ? e.category : '其他',
-        amount, currency: e.currency, rate,
-        twd: Number.isFinite(Number(e.twd)) ? Number(e.twd) : round2(amount * rate),
-        payerId: e.payerId,
-        participantIds: parts
-      });
+      t.expenses.push({ ...base, payerId: e.payerId, participantIds: parts, ledgerId: typeof e.ledgerId === 'string' ? e.ledgerId : null });
     }
   }
-  if (typeof d.me === 'string' && ids.has(d.me)) t.me = d.me;
+  if (Array.isArray(d.ledger)) {
+    for (const e of d.ledger) {
+      const base = e && cleanMoney(e);
+      if (!base) continue;
+      t.ledger.push({ ...base, method: METHODS.includes(e.method) ? e.method : '其他', splitId: typeof e.splitId === 'string' ? e.splitId : null });
+    }
+  }
+  // 兩本之間的連結要互相對得上，對不上就斷開
+  for (const r of t.ledger) {
+    if (r.splitId && !t.expenses.some(x => x.id === r.splitId && x.ledgerId === r.id)) r.splitId = null;
+  }
+  for (const x of t.expenses) {
+    if (x.ledgerId && !t.ledger.some(r => r.id === x.ledgerId && r.splitId === x.id)) x.ledgerId = null;
+  }
   if (d.rateOverrides && typeof d.rateOverrides === 'object') {
     for (const [k, v] of Object.entries(d.rateOverrides)) if (CUR[k] && Number(v) > 0) t.rateOverrides[k] = Number(v);
   }
@@ -695,35 +842,37 @@ function loadTrip() {
     return emptyTrip();
   }
 }
-
 function saveTrip() {
   try { localStorage.setItem(LS_TRIP, JSON.stringify(trip)); }
   catch (e) { console.warn(e); toast('無法儲存到瀏覽器（可能是私密瀏覽模式）'); }
 }
-
 function readRatesCache() {
   try {
     const c = JSON.parse(localStorage.getItem(LS_RATES) || 'null');
     return c && c.perTwd && typeof c.perTwd === 'object' ? c : null;
   } catch (e) { return null; }
 }
-function writeRatesCache(c) {
-  try { localStorage.setItem(LS_RATES, JSON.stringify(c)); } catch (e) { /* 存不了就算了 */ }
-}
+function writeRatesCache(c) { try { localStorage.setItem(LS_RATES, JSON.stringify(c)); } catch (e) { } }
 
 /* =========================================================
    狀態
    ========================================================= */
 let trip = loadTrip();
-// 匯率狀態：live＝剛抓到、cache＝離線用上次的、builtin＝內建參考值
 let rateState = { status: 'loading', perTwd: null, source: '', dataTime: '', fetchedAt: '', refreshing: true };
-let addDraft = newDraft();
-let addFormApi = null;
+const drafts = { ledger: null, split: null };
+const formApi = { ledger: null, split: null };
+let prefillInfo = null;
+let selecting = false;          // 記帳本明細的多選模式
+let picked = new Set();
+
+const meId = () => trip.members.some(m => m.id === trip.me) ? trip.me : null;
+const memberName = id => trip.members.find(m => m.id === id)?.name || '（已刪除）';
+const findSplit = id => trip.expenses.find(x => x.id === id);
+const findLedger = id => trip.ledger.find(x => x.id === id);
 
 /* =========================================================
    匯率
    ========================================================= */
-// 取得「1 外幣 = ? 台幣」：手動覆寫 > API 值 > 沒有
 function getRate(code) {
   if (code === 'TWD') return 1;
   if (trip.rateOverrides[code] > 0) return trip.rateOverrides[code];
@@ -741,8 +890,6 @@ async function fetchJSON(url) {
     return await res.json();
   } finally { clearTimeout(timer); }
 }
-
-// 只留下我們有用到的幣別
 function pickRates(all) {
   const out = {};
   for (const c of CURRENCIES) { const v = Number(all[c.code]); if (c.code !== 'TWD' && v > 0) out[c.code] = v; }
@@ -769,7 +916,6 @@ async function loadRates(manual) {
       console.warn(`匯率來源 ${src.name} 失敗：`, e.message || e);
     }
   }
-  // 三個來源都失敗 → 用上次快取，再不行用內建參考值
   const cache = readRatesCache();
   if (cache) {
     rateState = { status: 'cache', perTwd: cache.perTwd, source: cache.source, dataTime: cache.dataTime, fetchedAt: cache.fetchedAt, refreshing: false };
@@ -784,10 +930,9 @@ async function loadRates(manual) {
 function finishRates() {
   ratesLoading = false;
   renderRates();
-  addFormApi && addFormApi.refreshRate();
+  formApi.ledger && formApi.ledger.refreshRate();
+  formApi.split && formApi.split.refreshRate();
 }
-
-// 匯率狀態文字（記帳頁與設定頁共用）
 function rateStatusHTML() {
   const s = rateState;
   if (s.refreshing && !s.perTwd) return `<div class="rate-status"><span class="dot wait"></span>抓取今日匯率中…</div>`;
@@ -798,9 +943,8 @@ function rateStatusHTML() {
 }
 
 /* =========================================================
-   SVG 插圖：頭像、類別圖示、硬幣
+   SVG 插圖：頭像、類別、付款方式、硬幣
    ========================================================= */
-// 成員頭像：圓臉 + 4 種髮型輪替
 function faceSVG(m, cls = 'face') {
   const fill = MEMBER_COLORS[(m?.color ?? 0) % 8];
   const v = (m?.color ?? 0) % 4;
@@ -815,8 +959,9 @@ function faceSVG(m, cls = 'face') {
     <ellipse cx="11.5" cy="26.5" rx="2.6" ry="1.6" fill="#E9806F" opacity=".55"/><ellipse cx="28.5" cy="26.5" rx="2.6" ry="1.6" fill="#E9806F" opacity=".55"/>
     <path d="M17.5 26.5q2.5 2.6 5 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/></svg>`;
 }
+// 把頭像放進大插圖裡（巢狀 svg）
+const faceAt = (m, x, y, size) => `<svg x="${x}" y="${y}" width="${size}" height="${size}" viewBox="0 0 40 40">${faceSVG(m, '').replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>`;
 
-// 類別圖示：拉麵、電車、房子、購物袋、門票、星星
 function catSVG(cat) {
   const st = `stroke="${INK}" stroke-width="2.3" stroke-linejoin="round" stroke-linecap="round"`;
   const body = {
@@ -830,7 +975,20 @@ function catSVG(cat) {
   return `<svg viewBox="0 0 32 32" aria-hidden="true">${body}</svg>`;
 }
 
-// 匯率卡的兩枚硬幣：外幣 ⇄ 台幣
+// 付款方式小圖示
+function methodSVG(m) {
+  const st = `stroke="${INK}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round"`;
+  const body = {
+    現金: `<rect x="2" y="6" width="20" height="12" rx="3" fill="#B9DAA5" ${st}/><circle cx="12" cy="12" r="3" fill="${PAPER}" ${st}/>`,
+    信用卡: `<rect x="2" y="5" width="20" height="14" rx="3" fill="#A8D3E6" ${st}/><path d="M2 10h20M6 15h5" fill="none" ${st}/>`,
+    'Apple Pay': `<rect x="6" y="2" width="12" height="20" rx="3" fill="#FBE1DB" ${st}/><path d="M10.5 9q1.6 3 0 6M13.5 7.5q3 4.5 0 9" fill="none" ${st}/>`,
+    'LINE Pay': `<path d="M5 4h14a3 3 0 0 1 3 3v7a3 3 0 0 1-3 3h-7l-5 4v-4H5a3 3 0 0 1-3-3V7a3 3 0 0 1 3-3z" fill="#E4F0DC" ${st}/><path d="M8 10.5h8" fill="none" ${st}/>`,
+    其他: `<circle cx="12" cy="12" r="9" fill="#FCF0CF" ${st}/><path d="M8 12h.01M12 12h.01M16 12h.01" stroke="${INK}" stroke-width="3" stroke-linecap="round"/>`
+  }[m] || '';
+  return `<svg viewBox="0 0 24 24" aria-hidden="true">${body}</svg>`;
+}
+const methodTag = m => `<span class="method-tag">${methodSVG(m)}${esc(m)}</span>`;
+
 function coinsSVG(code) {
   const sym = code === 'TWD' ? 'NT' : (CUR[code]?.sym || code).replace(/US|HK|CN/, '');
   const fs = sym.length > 2 ? 11 : sym.length > 1 ? 14 : 18;
@@ -850,14 +1008,21 @@ const ICON = {
   trash: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 7h14l-1.4 13H6.4Z" fill="#FBE1DB" stroke="${INK}" stroke-width="2.3" stroke-linejoin="round"/><path d="M3.5 7h17M9.5 7V4h5v3M10 11v6M14 11v6" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
   close: `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18" stroke="${INK}" stroke-width="2.8" stroke-linecap="round"/></svg>`,
   copy: `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="8" y="8" width="12" height="13" rx="3" fill="#FFFCF6" stroke="${INK}" stroke-width="2.3"/><path d="M5 16V5a2 2 0 0 1 2-2h9" fill="none" stroke="${INK}" stroke-width="2.3" stroke-linecap="round"/></svg>`,
+  split: `<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="8.5" cy="9" r="4" fill="#F2A497" stroke="${INK}" stroke-width="2"/><circle cx="15.5" cy="9" r="4" fill="#A8D3E6" stroke="${INK}" stroke-width="2"/><path d="M3 20q5.5-6 11 0M10 20q5.5-6 11 0" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round"/></svg>`,
   arrow: `<svg class="arrow" viewBox="0 0 46 20" aria-hidden="true"><path d="M3 10H40" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-dasharray="1 6"/><path d="M33 4L41 10L33 16" fill="none" stroke="${INK}" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>`
+};
+const TAB_ICON = {
+  add: `<svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="3" width="14" height="19" rx="3.5" fill="#FFFCF6" stroke="${INK}" stroke-width="2.2"/><path d="M7 9h6M7 13h6" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><path d="M14 21l8-10 2.4 1.8-8 10-3.4.8Z" fill="#F6D27A" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/></svg>`,
+  list: `<svg viewBox="0 0 26 26" aria-hidden="true"><rect x="3" y="4" width="20" height="18" rx="4" fill="#A8D3E6" stroke="${INK}" stroke-width="2.2"/><circle cx="8" cy="10" r="1.6" fill="${INK}"/><circle cx="8" cy="16" r="1.6" fill="${INK}"/><path d="M12 10h7M12 16h7" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/></svg>`,
+  stats: `<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M3 22h20" stroke="${INK}" stroke-width="2.2" stroke-linecap="round"/><rect x="5" y="12" width="4.5" height="10" rx="1.5" fill="#F2A497" stroke="${INK}" stroke-width="2"/><rect x="11" y="6" width="4.5" height="16" rx="1.5" fill="#F6D27A" stroke="${INK}" stroke-width="2"/><rect x="17" y="14" width="4.5" height="8" rx="1.5" fill="#B9DAA5" stroke="${INK}" stroke-width="2"/></svg>`,
+  settle: `<svg viewBox="0 0 26 26" aria-hidden="true"><circle cx="9" cy="14" r="6.5" fill="#F6D27A" stroke="${INK}" stroke-width="2.2"/><circle cx="17" cy="11" r="6.5" fill="#B9DAA5" stroke="${INK}" stroke-width="2.2"/><path d="M14 11h6M17.5 8.5L20 11l-2.5 2.5" fill="none" stroke="${INK}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>`,
+  settings: `<svg viewBox="0 0 26 26" aria-hidden="true"><path d="M9.5 7V4.5h7V7" fill="none" stroke="${INK}" stroke-width="2.2" stroke-linejoin="round"/><rect x="3" y="7" width="20" height="15" rx="4" fill="#F2A497" stroke="${INK}" stroke-width="2.2"/><path d="M3 13h20" stroke="${INK}" stroke-width="2.2"/></svg>`
 };
 
 /* =========================================================
    分帳結算演算法（規格書第四章）
    ========================================================= */
 function computeSettlement() {
-  // 1～3. 每人已付、應付、淨額
   const bal = new Map(trip.members.map(m => [m.id, { paid: 0, owed: 0 }]));
   let total = 0;
   for (const e of trip.expenses) {
@@ -868,14 +1033,9 @@ function computeSettlement() {
     const share = e.twd / parts.length;
     for (const id of parts) bal.get(id).owed += share;
   }
-  const rows = trip.members.map(m => {
-    const b = bal.get(m.id);
-    return { member: m, paid: b.paid, owed: b.owed, net: b.paid - b.owed };
-  });
-  // 4. 收款名單、付款名單，各自由大到小
+  const rows = trip.members.map(m => { const b = bal.get(m.id); return { member: m, paid: b.paid, owed: b.owed, net: b.paid - b.owed }; });
   const creditors = rows.filter(r => r.net >= 1).map(r => ({ id: r.member.id, rem: r.net })).sort((a, b) => b.rem - a.rem);
   const debtors = rows.filter(r => r.net <= -1).map(r => ({ id: r.member.id, rem: -r.net })).sort((a, b) => b.rem - a.rem);
-  // 5～6. 兩邊第一位配對，轉較小的金額，歸零就移出
   const transfers = [];
   let i = 0, j = 0;
   while (i < debtors.length && j < creditors.length) {
@@ -883,39 +1043,53 @@ function computeSettlement() {
     const amt = Math.min(d.rem, c.rem);
     if (Math.round(amt) >= 1) transfers.push({ from: d.id, to: c.id, amount: amt });
     d.rem -= amt; c.rem -= amt;
-    if (d.rem < 1) i++;   // 剩不到 1 元視為 0
+    if (d.rem < 1) i++;
     if (c.rem < 1) j++;
   }
   return { rows, transfers, total };
 }
 
 /* =========================================================
-   帳目表單（記帳頁與編輯面板共用）
+   帳目表單（記帳本、分帳本、編輯面板共用）
+   mode = 'ledger'：有付款方式、可勾「也放進分帳本」
+   mode = 'split' ：一定要選付款人和分攤成員
    ========================================================= */
-function newDraft() {
+function newDraft(mode) {
   return {
-    date: todayStr(), title: '', category: '餐飲', amount: '',
+    mode, date: todayStr(), title: '', category: '餐飲', amount: '',
     currency: trip.defaultCurrency || 'JPY', rate: '', rateTouched: false,
+    method: '現金', toSplit: false,
     payerId: meId() || trip.members[0]?.id || null,
     participantIds: trip.members.map(m => m.id), participantsTouched: false
   };
 }
-// 成員變動後，讓草稿裡的付款人與分攤成員保持有效
 function syncDraft(d) {
   const ids = trip.members.map(m => m.id);
-  if (!ids.includes(d.payerId)) d.payerId = ids[0] || null;
+  if (!ids.includes(d.payerId)) d.payerId = meId() || ids[0] || null;
   d.participantIds = d.participantsTouched ? ids.filter(id => d.participantIds.includes(id)) : ids.slice();
+  if (ids.length < 2) d.toSplit = false;
 }
 
 function buildExpenseForm(d, opts) {
+  const isLedger = d.mode === 'ledger';
+  const canSplit = trip.members.length >= 2;
   const form = document.createElement('form');
   form.className = 'exp-form';
   form.noValidate = true;
   if (!d.rateTouched || !d.rate) d.rate = rateInputValue(d.currency);
+
   const curOptions = CURRENCIES.map(c => `<option value="${c.code}" ${c.code === d.currency ? 'selected' : ''}>${c.code} ${c.name}</option>`).join('');
   const catChips = CATEGORIES.map(c => `<button type="button" class="chip" data-cat="${c}" aria-pressed="${c === d.category}">${catSVG(c)}${c}</button>`).join('');
+  const methodChips = METHODS.map(m => `<button type="button" class="chip method" data-method="${m}" aria-pressed="${m === d.method}">${methodSVG(m)}${m}</button>`).join('');
   const payerChips = trip.members.map(m => `<button type="button" class="chip" role="radio" data-payer="${m.id}" aria-checked="${m.id === d.payerId}">${faceSVG(m, '')}${esc(m.name)}</button>`).join('');
   const partChips = trip.members.map(m => `<button type="button" class="chip part" data-part="${m.id}" aria-pressed="${d.participantIds.includes(m.id)}">${faceSVG(m, '')}${esc(m.name)}<span class="tick">✓</span></button>`).join('');
+  const splitFields = `
+    <div class="field"><span class="label">誰付的</span><div class="chips" role="radiogroup" aria-label="付款人">${payerChips}</div></div>
+    <div class="field">
+      <span class="label">誰要分<button type="button" class="link-btn" data-act="all">全選／全不選</button></span>
+      <div class="chips">${partChips}</div>
+      <div class="per-head num" data-perhead></div>
+    </div>`;
 
   form.innerHTML = `
     <div class="row">
@@ -933,39 +1107,42 @@ function buildExpenseForm(d, opts) {
       <button type="button" class="link-btn" data-act="reset-rate">改回目前匯率</button>
     </div>
     <div class="preview"><span class="muted tiny">換算台幣</span><b class="num" data-preview>≈ NT$0</b></div>
-    <div class="field"><span class="label">誰付的</span><div class="chips" role="radiogroup" aria-label="付款人">${payerChips}</div></div>
-    <div class="field">
-      <span class="label">誰要分<button type="button" class="link-btn" data-act="all">全選／全不選</button></span>
-      <div class="chips">${partChips}</div>
-      <div class="per-head num" data-perhead></div>
-    </div>
+    ${isLedger ? `
+      <div class="field"><span class="label">付款方式</span><div class="chips">${methodChips}</div></div>
+      <div class="split-toggle ${canSplit ? '' : 'disabled'}">
+        <button type="button" class="chip" data-act="to-split" aria-pressed="${!!d.toSplit}">${ICON.split}也放進分帳本<span class="tick">✓</span></button>
+        <span class="tiny muted">${canSplit ? '這筆要和大家分攤時勾選' : '先到「設定」新增 2 位以上成員才能分帳'}</span>
+      </div>
+      <div class="split-area" data-split-area ${d.toSplit ? '' : 'hidden'}>${canSplit ? splitFields : ''}</div>`
+      : splitFields}
     <div>
       <button type="submit" class="btn primary big" data-submit>${opts.submitLabel}</button>
       <p class="form-hint" data-hint></p>
     </div>`;
 
   const amountEl = $('[name=amount]', form), rateEl = $('[name=rate]', form), submitEl = $('[data-submit]', form);
+  const needsSplit = () => !isLedger || d.toSplit;
 
   function setRateField() {
     rateEl.value = d.rate;
     $('[data-code]', form).textContent = d.currency;
     $('[data-rate-line]', form).style.display = d.currency === 'TWD' ? 'none' : '';
   }
-  function currentRate() { return d.currency === 'TWD' ? 1 : parseNum(d.rate); }
+  const currentRate = () => d.currency === 'TWD' ? 1 : parseNum(d.rate);
 
-  // 檢查欄位、更新換算預覽與按鈕狀態
   function update() {
     const amt = parseNum(d.amount), rate = currentRate(), n = d.participantIds.length;
     let err = '';
-    if (!(amt > 0)) err = '輸入大於 0 的金額就能新增';
+    if (!(amt > 0)) err = '輸入大於 0 的金額就能記下';
     else if (!(rate > 0)) err = `還沒有 ${d.currency} 的匯率，請在上方填入`;
-    else if (!d.payerId) err = '請選擇付款人';
-    else if (!n) err = '至少勾選一位分攤成員';
+    else if (needsSplit() && !d.payerId) err = '請選擇付款人';
+    else if (needsSplit() && !n) err = '至少勾選一位分攤成員';
     submitEl.disabled = !!err;
     $('[data-hint]', form).textContent = err;
     const twd = amt > 0 && rate > 0 ? amt * rate : 0;
     $('[data-preview]', form).textContent = '≈ ' + fmtTWD(twd);
-    $('[data-perhead]', form).textContent = twd && n ? `${n} 人分，每人約 ${fmtTWD(twd / n)}` : '';
+    const ph = $('[data-perhead]', form);
+    if (ph) ph.textContent = twd && n ? `${n} 人分，每人約 ${fmtTWD(twd / n)}` : '';
   }
 
   form.addEventListener('input', e => {
@@ -976,9 +1153,7 @@ function buildExpenseForm(d, opts) {
   });
   form.addEventListener('change', e => {
     if (e.target.name === 'currency') {
-      d.currency = e.target.value;
-      d.rateTouched = false;
-      d.rate = rateInputValue(d.currency);
+      d.currency = e.target.value; d.rateTouched = false; d.rate = rateInputValue(d.currency);
       setRateField(); update();
       opts.onCurrency && opts.onCurrency(d.currency);
     }
@@ -987,10 +1162,13 @@ function buildExpenseForm(d, opts) {
     const b = e.target.closest('button'); if (!b || b.type === 'submit') return;
     if (b.dataset.cat) {
       d.category = b.dataset.cat;
-      form.querySelectorAll('[data-cat]').forEach(x => x.setAttribute('aria-pressed', x === b));
+      $$('[data-cat]', form).forEach(x => x.setAttribute('aria-pressed', x === b));
+    } else if (b.dataset.method) {
+      d.method = b.dataset.method;
+      $$('[data-method]', form).forEach(x => x.setAttribute('aria-pressed', x === b));
     } else if (b.dataset.payer) {
       d.payerId = b.dataset.payer;
-      form.querySelectorAll('[data-payer]').forEach(x => x.setAttribute('aria-checked', x === b));
+      $$('[data-payer]', form).forEach(x => x.setAttribute('aria-checked', x === b));
     } else if (b.dataset.part) {
       const id = b.dataset.part;
       d.participantsTouched = true;
@@ -999,7 +1177,11 @@ function buildExpenseForm(d, opts) {
     } else if (b.dataset.act === 'all') {
       d.participantsTouched = true;
       d.participantIds = d.participantIds.length === trip.members.length ? [] : trip.members.map(m => m.id);
-      form.querySelectorAll('[data-part]').forEach(x => x.setAttribute('aria-pressed', d.participantIds.includes(x.dataset.part)));
+      $$('[data-part]', form).forEach(x => x.setAttribute('aria-pressed', d.participantIds.includes(x.dataset.part)));
+    } else if (b.dataset.act === 'to-split') {
+      d.toSplit = !d.toSplit;
+      b.setAttribute('aria-pressed', d.toSplit);
+      $('[data-split-area]', form).hidden = !d.toSplit;
     } else if (b.dataset.act === 'reset-rate') {
       d.rateTouched = false; d.rate = rateInputValue(d.currency); setRateField();
     }
@@ -1016,6 +1198,8 @@ function buildExpenseForm(d, opts) {
       category: d.category,
       amount, currency: d.currency, rate,
       twd: round2(amount * rate),
+      method: d.method,
+      toSplit: needsSplit(),
       payerId: d.payerId,
       participantIds: trip.members.map(m => m.id).filter(id => d.participantIds.includes(id))
     });
@@ -1025,40 +1209,48 @@ function buildExpenseForm(d, opts) {
   return {
     el: form,
     focusAmount: () => amountEl.focus(),
-    // 匯率抓到或改變時，若使用者沒手動改過，就帶入新匯率
     refreshRate() { if (!d.rateTouched) { d.rate = rateInputValue(d.currency); setRateField(); update(); } }
   };
 }
 
-function newExpenseId() {
-  let id = 'e' + Date.now();
-  while (trip.expenses.some(e => e.id === id)) id += 'x';
+function newId(prefix, list) {
+  let id = prefix + Date.now();
+  while (list.some(e => e.id === id)) id += 'x';
   return id;
+}
+const MONEY_KEYS = ['date', 'title', 'category', 'amount', 'currency', 'rate', 'twd'];
+const pickMoney = f => Object.fromEntries(MONEY_KEYS.map(k => [k, f[k]]));
+
+/* =========================================================
+   兩本之間的連結
+   ========================================================= */
+// 把記帳本的一筆放進分帳本
+function linkToSplit(rec, payerId, participantIds) {
+  const exp = { id: newId('e', trip.expenses), ...pickMoney(rec), payerId, participantIds: participantIds.slice(), ledgerId: rec.id };
+  trip.expenses.push(exp);
+  rec.splitId = exp.id;
+  return exp;
+}
+function unlinkFromSplit(rec) {
+  if (!rec.splitId) return;
+  trip.expenses = trip.expenses.filter(x => x.id !== rec.splitId);
+  rec.splitId = null;
 }
 
 /* =========================================================
-   畫面：記帳頁
+   匯率卡（記帳本、分帳本各一張）
    ========================================================= */
-function renderHero() {
-  const total = trip.expenses.reduce((s, e) => s + e.twd, 0);
-  $('#heroTitle').textContent = trip.tripName;
-  $('#heroTotal').textContent = fmtTWD(total);
-  $('#topTotal').textContent = fmtTWD(total);
-  $('#heroCount').textContent = `${trip.expenses.length} 筆帳目 · ${trip.members.length} 位成員`;
-  $('#heroFaces').innerHTML = trip.members.map(m => faceSVG(m, '')).join('');
-  document.title = `${trip.tripName}｜旅帳本 TripSplit`;
-}
-
-function renderRateCard() {
-  const code = addDraft.currency;
-  const card = $('#rateCard');
+function renderRateCard(book) {
+  const card = $('#rateCard-' + book);
+  const d = drafts[book];
+  if (!card || !d) return;
+  const code = d.currency;
   if (code === 'TWD') {
     card.innerHTML = `${coinsSVG('TWD')}<div><div class="rate-big">台幣不用換算</div><div class="rate-sub">金額直接記成台幣</div></div>${rateStatusHTML()}`;
     return;
   }
   const r = getRate(code);
   const manual = trip.rateOverrides[code] > 0;
-  // 參考金額：日圓看 1,000、韓元看 10,000、美元看 1
   const ref = r ? (r < 0.01 ? 10000 : r < 0.1 ? 1000 : r < 1 ? 100 : 1) : 0;
   card.innerHTML = `
     ${coinsSVG(code)}
@@ -1075,13 +1267,13 @@ function renderRateCard() {
     </div>
     <p class="rate-note">API 給的是國際市場中間價，和銀行現金賣出價或信用卡實際入帳匯率會差約 1%～2%；想精確對帳，可以在該筆帳目手動改成帳單上的匯率。</p>`;
 }
-
-$('#rateCard').addEventListener('click', e => {
+$$('.rate-card').forEach(card => card.addEventListener('click', e => {
   const b = e.target.closest('[data-act]'); if (!b) return;
+  const code = drafts[card.dataset.book].currency;
   if (b.dataset.act === 'refresh') loadRates(true);
-  if (b.dataset.act === 'manual') editRateOverride(addDraft.currency);
-  if (b.dataset.act === 'auto') clearRateOverride(addDraft.currency);
-});
+  if (b.dataset.act === 'manual') editRateOverride(code);
+  if (b.dataset.act === 'auto') clearRateOverride(code);
+}));
 
 async function editRateOverride(code) {
   const now = getRate(code);
@@ -1094,177 +1286,243 @@ async function editRateOverride(code) {
   const n = parseNum(v);
   if (!(n > 0)) { toast('匯率要是大於 0 的數字'); return; }
   trip.rateOverrides[code] = n;
-  saveTrip(); renderRates(); addFormApi && addFormApi.refreshRate();
+  saveTrip(); finishRatesUI();
   toast(`已改用 1 ${code} = ${n} TWD`);
 }
 function clearRateOverride(code) {
   delete trip.rateOverrides[code];
-  saveTrip(); renderRates(); addFormApi && addFormApi.refreshRate();
+  saveTrip(); finishRatesUI();
   toast(`${code} 改回自動匯率`);
 }
+function finishRatesUI() {
+  renderRates();
+  formApi.ledger && formApi.ledger.refreshRate();
+  formApi.split && formApi.split.refreshRate();
+}
 
-function renderAdd() {
-  const host = $('#addFormHost');
-  if (trip.members.length < 2) {
-    addFormApi = null;
-    host.innerHTML = `<div class="notice">
-      ${faceSVG({ color: 1 })}
-      <div><p>先到「設定」新增至少 2 位成員，才能開始記帳。</p>
-      <div class="row" style="flex-wrap:wrap"><button class="btn primary small" data-go="settings">去新增成員</button>
-      <button class="btn small" data-act="sample">先看範例</button></div></div></div>`;
-    return;
-  }
-  syncDraft(addDraft);
-  if (prefillInfo && !trip.members.some(m => m.id === addDraft.payerId)) addDraft.payerId = meId() || trip.members[0].id;
-  addFormApi = buildExpenseForm(addDraft, {
-    submitLabel: '新增這筆',
-    onCurrency: renderRateCard,
-    onSubmit(fields) {
-      const exp = { id: newExpenseId(), ...fields };
-      trip.expenses.push(exp);
+/* =========================================================
+   畫面：記帳本 → 記一筆
+   ========================================================= */
+function renderLedgerAdd() {
+  const total = sum(trip.ledger, e => e.twd);
+  const linked = trip.ledger.filter(r => r.splitId).length;
+  $('#ledgerHeroTotal').textContent = fmtTWD(total);
+  $('#ledgerHeroCount').textContent = `${trip.ledger.length} 筆${linked ? `，其中 ${linked} 筆放進分帳本` : ''}`;
+  syncDraft(drafts.ledger);
+  formApi.ledger = buildExpenseForm(drafts.ledger, {
+    submitLabel: '記下這筆',
+    onCurrency: () => renderRateCard('ledger'),
+    onSubmit(f) {
+      const rec = { id: newId('l', trip.ledger), ...pickMoney(f), method: f.method, splitId: null };
+      trip.ledger.push(rec);
+      if (f.toSplit) linkToSplit(rec, f.payerId, f.participantIds);
       saveTrip();
-      // 新增後清空金額與名稱，其他選項留著方便連續記帳
-      addDraft.amount = ''; addDraft.title = '';
-      addDraft.rateTouched = false; addDraft.rate = '';
+      const keep = drafts.ledger;
+      drafts.ledger = { ...keep, amount: '', title: '', rate: '', rateTouched: false, toSplit: false };
       prefillInfo = null;
       renderAll();
-      toast(`記下了！${exp.title} ${fmtTWD(exp.twd)}`);
-      addFormApi && addFormApi.focusAmount();
+      toast(`記下了！${rec.title} ${fmtTWD(rec.twd)}${f.toSplit ? '，也放進分帳本' : ''}`);
+      formApi.ledger && formApi.ledger.focusAmount();
     }
   });
+  const host = $('#ledgerFormHost');
   host.innerHTML = prefillInfo ? `<div class="prefill">
       <div><b>${prefillInfo.source === 'applepay' ? 'Apple Pay 自動帶入' : '從連結帶入'}</b>：${esc(prefillInfo.title || '（沒有店名）')} ${esc(prefillInfo.amountText)}
-      <div class="tiny">確認類別和誰要分，再按「新增這筆」。</div></div>
+      <div class="tiny">確認類別，要和大家分的話勾「也放進分帳本」，再按「記下這筆」。</div></div>
       <button type="button" class="btn small" data-act="dismiss-prefill">不記這筆</button></div>` : '';
-  host.appendChild(addFormApi.el);
+  host.appendChild(formApi.ledger.el);
 }
-$('#addFormHost').addEventListener('click', e => {
+$('#ledgerFormHost').addEventListener('click', e => {
   const b = e.target.closest('button'); if (!b) return;
-  if (b.dataset.go) go(b.dataset.go);
-  if (b.dataset.act === 'sample') loadSample();
-  if (b.dataset.act === 'dismiss-prefill') { prefillInfo = null; addDraft = newDraft(); renderAdd(); renderRateCard(); }
+  if (b.dataset.act === 'dismiss-prefill') { prefillInfo = null; drafts.ledger = newDraft('ledger'); renderLedgerAdd(); renderRateCard('ledger'); }
 });
 
 /* =========================================================
-   畫面：明細
+   畫面：記帳本 → 明細（可多選放進分帳本）
    ========================================================= */
-const memberName = id => trip.members.find(m => m.id === id)?.name || '（已刪除）';
-
-function renderList() {
-  const total = trip.expenses.reduce((s, e) => s + e.twd, 0);
-  $('#listTotal').textContent = fmtTWD(total);
-  $('#listCount').innerHTML = `${trip.expenses.length} 筆<br>${trip.members.length} 位成員`;
-  const host = $('#listHost');
-  if (!trip.expenses.length) {
-    host.innerHTML = `<div class="card empty">
-      <svg viewBox="0 0 120 80" aria-hidden="true"><rect x="22" y="8" width="76" height="64" rx="10" fill="#FFFCF6" stroke="${INK}" stroke-width="3"/><path d="M38 28H82M38 42H82M38 56H64" stroke="#A8D3E6" stroke-width="3" stroke-linecap="round"/><circle cx="96" cy="62" r="13" fill="#F6D27A" stroke="${INK}" stroke-width="3"/><path d="M91 58l5 5 5-5M96 63v6" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-      <p>還沒有任何帳目，第一筆從哪裡開始呢？</p>
-      <button class="btn primary" data-go="add">去記一筆</button></div>`;
-    return;
-  }
-  // 依日期分組，新到舊；同一天內後記的在上面
-  const sorted = trip.expenses.slice().sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
+function groupByDate(list) {
+  const sorted = list.slice().sort((a, b) => b.date.localeCompare(a.date) || b.id.localeCompare(a.id));
   const groups = new Map();
   for (const e of sorted) { if (!groups.has(e.date)) groups.set(e.date, []); groups.get(e.date).push(e); }
-  let html = '';
-  for (const [date, list] of groups) {
-    const [, m, d] = date.split('-');
-    const sub = list.reduce((s, e) => s + e.twd, 0);
-    html += `<div class="day-head"><b>${+m} 月 ${+d} 日（${weekday(date)}）</b><span class="num">小計 ${fmtTWD(sub)}</span></div>`;
-    for (const e of list) {
-      html += `<div class="exp" role="button" tabindex="0" data-edit="${e.id}" aria-label="編輯 ${esc(e.title)}">
-        <div class="cat-ico" style="background:${CAT_COLOR[e.category]}33">${catSVG(e.category)}</div>
+  return groups;
+}
+const emptyCard = (msg, btnLabel, route) => `<div class="card empty">
+  <svg viewBox="0 0 120 80" aria-hidden="true"><rect x="22" y="8" width="76" height="64" rx="10" fill="#FFFCF6" stroke="${INK}" stroke-width="3"/><path d="M38 28H82M38 42H82M38 56H64" stroke="#A8D3E6" stroke-width="3" stroke-linecap="round"/><circle cx="96" cy="62" r="13" fill="#F6D27A" stroke="${INK}" stroke-width="3"/><path d="M91 58l5 5 5-5M96 63v6" fill="none" stroke="${INK}" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <p>${msg}</p>${btnLabel ? `<button class="btn primary" data-go="${route}">${btnLabel}</button>` : ''}</div>`;
+
+function renderLedgerList() {
+  const total = sum(trip.ledger, e => e.twd);
+  const linked = trip.ledger.filter(r => r.splitId);
+  $('#ledgerListTotal').textContent = fmtTWD(total);
+  $('#ledgerListCount').innerHTML = `${trip.ledger.length} 筆<br>${linked.length} 筆已分帳`;
+  const host = $('#ledgerListHost');
+  picked = new Set([...picked].filter(id => findLedger(id) && !findLedger(id).splitId));
+  if (!trip.ledger.length) {
+    selecting = false;
+    host.innerHTML = emptyCard('記帳本還是空的。記一筆、刷 Apple Pay 自動帶入，或匯入信用卡帳單都可以。', '去記一筆', 'ledger-add');
+    renderBulkBar();
+    return;
+  }
+  const canSplit = trip.members.length >= 2;
+  const unlinked = trip.ledger.filter(r => !r.splitId).length;
+  let html = `<div class="list-tools">
+    <span class="tiny muted">${selecting ? '點選要放進分帳本的帳目' : '點帳目可以編輯；按右邊的「分帳」放進分帳本'}</span>
+    ${canSplit && unlinked ? `<button class="btn small ${selecting ? '' : 'green'}" data-act="toggle-select">${selecting ? '取消多選' : '多選放進分帳本'}</button>` : ''}
+  </div>`;
+  for (const [date, list] of groupByDate(trip.ledger)) {
+    html += `<div class="day-head"><b>${dayLabel(date)}</b><span class="num">小計 ${fmtTWD(sum(list, e => e.twd))}</span></div>`;
+    for (const r of list) {
+      const exp = r.splitId ? findSplit(r.splitId) : null;
+      const isPicked = picked.has(r.id);
+      let action;
+      const linkedMark = `<span class="linked-mark" title="已在分帳本" aria-label="已在分帳本">✓</span>`;
+      if (selecting) action = r.splitId ? linkedMark : `<span class="pick-box" aria-hidden="true">${isPicked ? '✓' : ''}</span>`;
+      else if (r.splitId) action = linkedMark;
+      else action = canSplit ? `<button class="btn small green split-btn" data-tosplit="${r.id}" aria-label="把 ${esc(r.title)} 放進分帳本">${ICON.split}分帳</button>` : '<span></span>';
+      html += `<div class="exp ledger ${selecting ? 'selecting' : ''} ${r.splitId ? 'linked' : ''} ${isPicked ? 'picked' : ''}" role="button" tabindex="0" data-ledger="${r.id}" aria-label="${selecting ? '選取' : '編輯'} ${esc(r.title)}">
+        <div class="cat-ico" style="background:${CAT_COLOR[r.category]}33">${catSVG(r.category)}</div>
         <div style="min-width:0">
-          <div class="exp-title">${esc(e.title)}</div>
-          <div class="exp-meta">${esc(memberName(e.payerId))} 付 · ${e.participantIds.length} 人分${e.participantIds.length < trip.members.length ? '（' + e.participantIds.map(memberName).map(esc).join('、') + '）' : ''}</div>
+          <div class="exp-title">${esc(r.title)}</div>
+          <div class="exp-meta">${methodTag(r.method)}${exp ? ` · 已分帳（${esc(memberName(exp.payerId))} 付，${exp.participantIds.length} 人分）` : ''}</div>
         </div>
-        <div class="exp-amt num"><div class="tw">${fmtTWD(e.twd)}</div>${e.currency !== 'TWD' ? `<div class="fx">${esc(fmtFx(e.amount, e.currency))}</div>` : ''}</div>
-        <button class="icon-btn" data-del="${e.id}" aria-label="刪除 ${esc(e.title)}">${ICON.trash}</button>
+        <div class="exp-amt num"><div class="tw">${fmtTWD(r.twd)}</div>${r.currency !== 'TWD' ? `<div class="fx">${esc(fmtFx(r.amount, r.currency))}</div>` : ''}</div>
+        ${action}
       </div>`;
     }
   }
   host.innerHTML = html;
+  renderBulkBar();
 }
-$('#listHost').addEventListener('click', e => {
-  const del = e.target.closest('[data-del]');
-  if (del) { deleteExpense(del.dataset.del); return; }
-  const go2 = e.target.closest('[data-go]');
-  if (go2) { go(go2.dataset.go); return; }
-  const card = e.target.closest('[data-edit]');
-  if (card) openEditSheet(card.dataset.edit);
+function renderBulkBar() {
+  let bar = $('#bulkBar');
+  const show = selecting && $('#page-ledger-list').classList.contains('active');
+  if (!show) { bar && bar.remove(); return; }
+  if (!bar) { bar = document.createElement('div'); bar.id = 'bulkBar'; bar.className = 'bulk-bar'; document.body.appendChild(bar); }
+  const items = [...picked].map(findLedger).filter(Boolean);
+  bar.innerHTML = `<div class="txt num">已選 ${items.length} 筆<br>${fmtTWD(sum(items, r => r.twd))}</div>
+    <button class="btn small" data-act="toggle-select">取消</button>
+    <button class="btn small green" data-act="bulk-split" ${items.length ? '' : 'disabled'}>放進分帳本</button>`;
+}
+document.addEventListener('click', e => {
+  const b = e.target.closest('#bulkBar button'); if (!b) return;
+  if (b.dataset.act === 'toggle-select') { selecting = false; picked.clear(); renderLedgerList(); }
+  if (b.dataset.act === 'bulk-split') openSendToSplit([...picked]);
 });
-$('#listHost').addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-edit]')) { e.preventDefault(); openEditSheet(e.target.dataset.edit); }
+$('#ledgerListHost').addEventListener('click', e => {
+  const t = e.target;
+  const go2 = t.closest('[data-go]'); if (go2) { go(go2.dataset.go); return; }
+  const tog = t.closest('[data-act=toggle-select]');
+  if (tog) { selecting = !selecting; picked.clear(); renderLedgerList(); return; }
+  const ts = t.closest('[data-tosplit]'); if (ts) { openSendToSplit([ts.dataset.tosplit]); return; }
+  const row = t.closest('[data-ledger]'); if (!row) return;
+  const id = row.dataset.ledger;
+  if (selecting) {
+    const r = findLedger(id);
+    if (!r || r.splitId) { toast('這筆已經在分帳本了'); return; }
+    picked.has(id) ? picked.delete(id) : picked.add(id);
+    renderLedgerList();
+  } else openLedgerEdit(id);
+});
+$('#ledgerListHost').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-ledger]')) { e.preventDefault(); e.target.click(); }
 });
 
-async function deleteExpense(id) {
-  const exp = trip.expenses.find(e => e.id === id); if (!exp) return;
-  const ok = await confirmDialog({
-    title: '刪除這筆帳目？',
-    message: `「${exp.title}」${fmtFx(exp.amount, exp.currency)}（${fmtTWD(exp.twd)}）會被刪除，結算會重新計算。`,
-    ok: '刪除', danger: true
+// 選好的記帳本帳目 → 選付款人和分攤成員 → 放進分帳本
+function openSendToSplit(ids) {
+  const recs = ids.map(findLedger).filter(r => r && !r.splitId);
+  if (!recs.length) return;
+  if (trip.members.length < 2) { toast('先到設定新增至少 2 位成員'); go('settings'); return; }
+  let payerId = meId() || trip.members[0].id;
+  let parts = trip.members.map(m => m.id);
+  const total = sum(recs, r => r.twd);
+  const modal = openModal('sheet', `
+    <div class="grab"></div>
+    <div class="sheet-head"><h2>放進分帳本</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    <p class="muted" style="margin:0 0 12px">${recs.length === 1 ? `「${esc(recs[0].title)}」` : `${recs.length} 筆`}，共 <b class="num" style="font-weight:400;color:var(--ink)">${fmtTWD(total)}</b>。記帳本裡的帳目會保留，分帳本多一筆副本並互相連動。</p>
+    <div class="exp-form">
+      <div class="field"><span class="label">誰付的${meId() ? '' : '（到設定選「我是」，之後就會自動選你）'}</span><div class="chips">${trip.members.map(m => `<button type="button" class="chip" role="radio" data-payer="${m.id}" aria-checked="${m.id === payerId}">${faceSVG(m, '')}${esc(m.name)}</button>`).join('')}</div></div>
+      <div class="field"><span class="label">誰要分</span><div class="chips">${trip.members.map(m => `<button type="button" class="chip part" data-part="${m.id}" aria-pressed="true">${faceSVG(m, '')}${esc(m.name)}<span class="tick">✓</span></button>`).join('')}</div>
+        <div class="per-head num" data-perhead></div></div>
+      <button class="btn primary big" data-act="send">放進分帳本</button>
+    </div>`);
+  const box = modal.box;
+  const upd = () => {
+    $('[data-perhead]', box).textContent = parts.length ? `${parts.length} 人分，每人約 ${fmtTWD(total / parts.length)}` : '至少選一位分攤成員';
+    $('[data-act=send]', box).disabled = !parts.length;
+  };
+  box.addEventListener('click', e => {
+    const b = e.target.closest('button'); if (!b) return;
+    if (b.dataset.payer) { payerId = b.dataset.payer; $$('[data-payer]', box).forEach(x => x.setAttribute('aria-checked', x === b)); }
+    if (b.dataset.part) {
+      const id = b.dataset.part;
+      parts = parts.includes(id) ? parts.filter(x => x !== id) : trip.members.map(m => m.id).filter(x => x === id || parts.includes(x));
+      b.setAttribute('aria-pressed', parts.includes(id)); upd();
+    }
+    if (b.dataset.act === 'send') {
+      for (const r of recs) linkToSplit(r, payerId, parts);
+      saveTrip(); modal.close();
+      selecting = false; picked.clear();
+      renderAll();
+      toast(`已把 ${recs.length} 筆放進分帳本`);
+    }
   });
-  if (!ok) return false;
-  trip.expenses = trip.expenses.filter(e => e.id !== id);
-  saveTrip(); renderAll();
-  toast('已刪除');
-  return true;
+  upd();
 }
 
-function openEditSheet(id) {
-  const exp = trip.expenses.find(e => e.id === id); if (!exp) return;
+function openLedgerEdit(id) {
+  const rec = findLedger(id); if (!rec) return;
+  const exp = rec.splitId ? findSplit(rec.splitId) : null;
   const d = {
-    date: exp.date, title: exp.title, category: exp.category,
-    amount: String(exp.amount), currency: exp.currency,
-    rate: String(exp.rate), rateTouched: true,   // 保留當初記帳的匯率
-    payerId: exp.payerId, participantIds: exp.participantIds.slice(), participantsTouched: true
+    mode: 'ledger', date: rec.date, title: rec.title, category: rec.category,
+    amount: String(rec.amount), currency: rec.currency, rate: String(rec.rate), rateTouched: true,
+    method: rec.method, toSplit: !!exp,
+    payerId: exp ? exp.payerId : (meId() || trip.members[0]?.id || null),
+    participantIds: exp ? exp.participantIds.slice() : trip.members.map(m => m.id), participantsTouched: !!exp
   };
   syncDraft(d);
   const modal = openModal('sheet', `
     <div class="grab"></div>
-    <div class="sheet-head"><h2>編輯帳目</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    <div class="sheet-head"><h2>編輯記帳本帳目</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    ${exp ? '<p class="tiny muted" style="margin:0 0 10px">這筆也在分帳本裡，改金額或內容會一起更新；取消勾選「也放進分帳本」會從分帳本移除。</p>' : ''}
     <div data-form></div>
     <div style="margin-top:12px;text-align:center"><button class="btn danger small" data-del>${ICON.trash}刪除這筆</button></div>`);
   const api = buildExpenseForm(d, {
     submitLabel: '儲存修改',
-    onSubmit(fields) {
-      Object.assign(exp, fields);
+    onSubmit(f) {
+      Object.assign(rec, pickMoney(f), { method: f.method });
+      if (f.toSplit) {
+        const x = rec.splitId && findSplit(rec.splitId);
+        if (x) Object.assign(x, pickMoney(f), { payerId: f.payerId, participantIds: f.participantIds });
+        else linkToSplit(rec, f.payerId, f.participantIds);
+      } else unlinkFromSplit(rec);
       saveTrip(); modal.close(); renderAll();
       toast('已更新');
     }
   });
   $('[data-form]', modal.box).appendChild(api.el);
-  $('[data-del]', modal.box).addEventListener('click', async () => {
-    modal.close();
-    await deleteExpense(id);
+  $('[data-del]', modal.box).addEventListener('click', async () => { modal.close(); await deleteLedger(id); });
+}
+
+async function deleteLedger(id) {
+  const rec = findLedger(id); if (!rec) return;
+  const ok = await confirmDialog({
+    title: '刪除這筆帳目？',
+    message: `「${rec.title}」${fmtFx(rec.amount, rec.currency)}（${fmtTWD(rec.twd)}）會從記帳本刪除。${rec.splitId ? '\n分帳本裡對應的那筆也會一起刪除，結算會重新計算。' : ''}`,
+    ok: '刪除', danger: true
   });
+  if (!ok) return;
+  unlinkFromSplit(rec);
+  trip.ledger = trip.ledger.filter(r => r.id !== id);
+  saveTrip(); renderAll(); toast('已刪除');
 }
 
 /* =========================================================
-   畫面：結算
+   畫面：記帳本 → 統計
    ========================================================= */
-function settleArtSVG() {
-  const ms = trip.members;
-  const a = ms[0] || { color: 0 }, b = ms[1] || { color: 1 };
-  return `<svg viewBox="0 0 360 112" aria-hidden="true">
-    <rect width="360" height="112" fill="#E4F0DC"/>
-    <path d="M-4 96Q90 80 180 92T364 88V116H-4Z" fill="#B9DAA5" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
-    <path d="M110 58Q180 0 250 58" fill="none" stroke="${INK}" stroke-width="2.5" stroke-dasharray="3 8" stroke-linecap="round"/>
-    <svg x="54" y="40" width="58" height="58">${faceSVG(a, '').replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>
-    <svg x="248" y="40" width="58" height="58">${faceSVG(b, '').replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>
-    <g class="hop"><circle cx="180" cy="30" r="15" fill="#F6D27A" stroke="${INK}" stroke-width="3"/>
-    <text x="180" y="34.5" text-anchor="middle" font-size="12" fill="${INK}" font-family="Huninn, sans-serif">NT$</text></g>
-  </svg>`;
-}
-// 背景亮色裡夾一層 viewBox 讓臉放大：上面用 <svg x y width height> 巢狀處理
-function fixNestedFaces(svgStr) {
-  return svgStr.replace(/<svg x="(\d+)" y="(\d+)" width="(\d+)" height="(\d+)">/g, '<svg x="$1" y="$2" width="$3" height="$4" viewBox="0 0 40 40">');
-}
-
 function donutSVG(parts, total) {
   const R = 56, r = 32, cx = 64, cy = 64;
   if (parts.length === 1) {
-    return `<svg viewBox="0 0 128 128" role="img" aria-label="花費類別圓餅圖"><circle cx="${cx}" cy="${cy}" r="${(R + r) / 2}" fill="none" stroke="${parts[0].color}" stroke-width="${R - r}"/>
+    return `<svg viewBox="0 0 128 128" role="img" aria-label="圓餅圖"><circle cx="${cx}" cy="${cy}" r="${(R + r) / 2}" fill="none" stroke="${parts[0].color}" stroke-width="${R - r}"/>
       <circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="${INK}" stroke-width="2.5"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="${PAPER}" stroke="${INK}" stroke-width="2.5"/></svg>`;
   }
   const pt = (rad, ang) => `${(cx + rad * Math.cos(ang)).toFixed(2)} ${(cy + rad * Math.sin(ang)).toFixed(2)}`;
@@ -1274,45 +1532,227 @@ function donutSVG(parts, total) {
     const large = a1 - a0 > Math.PI ? 1 : 0;
     paths += `<path d="M${pt(R, a0)}A${R} ${R} 0 ${large} 1 ${pt(R, a1)}L${pt(r, a1)}A${r} ${r} 0 ${large} 0 ${pt(r, a0)}Z" fill="${p.color}" stroke="${INK}" stroke-width="2.5" stroke-linejoin="round"/>`;
   }
-  return `<svg viewBox="0 0 128 128" role="img" aria-label="花費類別圓餅圖">${paths}<circle cx="${cx}" cy="${cy}" r="${r - 1}" fill="${PAPER}"/></svg>`;
+  return `<svg viewBox="0 0 128 128" role="img" aria-label="圓餅圖">${paths}<circle cx="${cx}" cy="${cy}" r="${r - 1}" fill="${PAPER}"/></svg>`;
+}
+function categoryCard(list, title) {
+  const total = sum(list, e => e.twd);
+  const byCat = CATEGORIES.map(c => ({ cat: c, color: CAT_COLOR[c], value: sum(list.filter(e => e.category === c), e => e.twd) })).filter(p => p.value > 0).sort((a, b) => b.value - a.value);
+  return `<div class="card"><h2>${title}</h2><div class="donut-wrap">${donutSVG(byCat, total)}
+    <ul class="legend num">${byCat.map(p => `<li><span class="sw" style="background:${p.color}"></span><span>${p.cat} ${fmtTWD(p.value)}</span><span class="pct">${Math.round(p.value / total * 100)}%</span></li>`).join('')}</ul></div></div>`;
+}
+function barsHTML(rows, max) {
+  return `<ul class="bars num">${rows.map(r => `<li><span class="lbl">${r.icon || ''}${esc(r.label)}</span>
+    <span class="track"><span class="fill" style="display:block;width:${Math.max(2, r.value / max * 100)}%;background:${r.color}"></span></span>
+    <span class="v">${fmtTWD(r.value)}</span></li>`).join('')}</ul>`;
+}
+function renderLedgerStats() {
+  const L = trip.ledger;
+  const side = $('#statsSide'), main = $('#statsMain');
+  if (!L.length) {
+    side.innerHTML = '';
+    main.innerHTML = emptyCard('記下幾筆之後，這裡會整理你的花費：花在哪些類別、用哪種方式付、每天花多少。', '去記一筆', 'ledger-add');
+    return;
+  }
+  const total = sum(L, r => r.twd);
+  // 放進分帳本、而且是自己付的那幾筆：別人該還我的部分
+  let linkedTotal = 0, othersOwe = 0;
+  for (const r of L) {
+    const x = r.splitId && findSplit(r.splitId); if (!x) continue;
+    linkedTotal += r.twd;
+    const owner = meId() || x.payerId;
+    if (x.payerId === owner) othersOwe += x.twd - (x.participantIds.includes(owner) ? x.twd / x.participantIds.length : 0);
+  }
+  side.innerHTML = `<div class="card tint-yellow"><h2>這趟我花了多少</h2>
+    <div class="kv num">
+      <span>記帳本合計</span><span class="big">${fmtTWD(total)}</span>
+      <span class="muted">放進分帳本的</span><span>${fmtTWD(linkedTotal)}</span>
+      <span class="muted">其中別人該還我</span><span>${fmtTWD(othersOwe)}</span>
+      <hr><span>我實際負擔</span><span class="big">${fmtTWD(total - othersOwe)}</span>
+    </div>
+    <p class="tiny muted" style="margin:10px 0 0">「我實際負擔」= 記帳本合計 − 別人該還我的部分。${meId() ? '' : '到設定選「我是」會算得更準。'}</p></div>`;
+  const byMethod = METHODS.map(m => ({ label: m, icon: methodSVG(m), color: METHOD_COLOR[m], value: sum(L.filter(r => r.method === m), r => r.twd) })).filter(x => x.value > 0).sort((a, b) => b.value - a.value);
+  const days = [...groupByDate(L)].map(([d, list]) => ({ label: d.slice(5).replace('-', '/') + ' ' + weekday(d), color: '#F6D27A', value: sum(list, r => r.twd) })).reverse();
+  main.innerHTML = categoryCard(L, '花在哪裡') +
+    `<div class="card"><h2>用什麼付</h2>${barsHTML(byMethod, byMethod[0].value)}</div>` +
+    `<div class="card"><h2>每天花多少</h2>${barsHTML(days, Math.max(...days.map(x => x.value)))}</div>`;
+}
+$('#statsMain').addEventListener('click', e => { const b = e.target.closest('[data-go]'); if (b) go(b.dataset.go); });
+
+/* =========================================================
+   畫面：分帳本 → 記一筆
+   ========================================================= */
+function settleArtSVG() {
+  const a = trip.members[0] || { color: 0 }, b = trip.members[1] || { color: 1 };
+  return `<svg viewBox="0 0 360 112" aria-hidden="true">
+    <rect width="360" height="112" fill="#E4F0DC"/>
+    <path d="M-4 96Q90 80 180 92T364 88V116H-4Z" fill="#B9DAA5" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M110 58Q180 0 250 58" fill="none" stroke="${INK}" stroke-width="2.5" stroke-dasharray="3 8" stroke-linecap="round"/>
+    ${faceAt(a, 54, 40, 58)}${faceAt(b, 248, 40, 58)}
+    <g class="hop"><circle cx="180" cy="30" r="15" fill="#F6D27A" stroke="${INK}" stroke-width="3"/>
+    <text x="180" y="34.5" text-anchor="middle" font-size="12" fill="${INK}" font-family="Huninn, sans-serif">NT$</text></g>
+  </svg>`;
+}
+function splitListArtSVG() {
+  const ms = trip.members.length ? trip.members : [{ color: 0 }, { color: 1 }, { color: 2 }];
+  return `<svg viewBox="0 0 360 112" aria-hidden="true">
+    <rect width="360" height="112" fill="#E4F0DC"/>
+    <g transform="translate(150 12)">
+      <path d="M0 0H60V88L53 82L45 88L37 82L30 88L22 82L15 88L7 82L0 88Z" fill="#FFFCF6" stroke="${INK}" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M10 16H50M10 30H40M10 44H46M10 62H50" stroke="${INK}" stroke-width="2.5" stroke-linecap="round"/>
+    </g>
+    ${ms.slice(0, 2).map((m, i) => faceAt(m, 40 + i * 50, 44 - i * 12, 52)).join('')}
+    ${ms.slice(2, 4).map((m, i) => faceAt(m, 236 + i * 50, 32 + i * 12, 52)).join('')}
+  </svg>`;
+}
+function renderSplitAdd() {
+  const total = sum(trip.expenses, e => e.twd);
+  $('#splitHeroArt').innerHTML = settleArtSVG();
+  $('#splitHeroTotal').textContent = fmtTWD(total);
+  $('#splitHeroCount').textContent = `${trip.expenses.length} 筆 · ${trip.members.length} 位成員`;
+  $('#splitHeroFaces').innerHTML = trip.members.map(m => faceSVG(m, '')).join('');
+  const host = $('#splitFormHost');
+  if (trip.members.length < 2) {
+    formApi.split = null;
+    host.innerHTML = `<div class="notice">${faceSVG({ color: 1 })}
+      <div><p>先到「設定」新增至少 2 位成員，才能開始分帳。</p>
+      <div class="row" style="flex-wrap:wrap"><button class="btn primary small" data-go="settings">去新增成員</button>
+      <button class="btn small" data-act="sample">先看範例</button></div></div></div>`;
+    return;
+  }
+  syncDraft(drafts.split);
+  formApi.split = buildExpenseForm(drafts.split, {
+    submitLabel: '新增這筆',
+    onCurrency: () => renderRateCard('split'),
+    onSubmit(f) {
+      const exp = { id: newId('e', trip.expenses), ...pickMoney(f), payerId: f.payerId, participantIds: f.participantIds, ledgerId: null };
+      trip.expenses.push(exp);
+      saveTrip();
+      drafts.split = { ...drafts.split, amount: '', title: '', rate: '', rateTouched: false };
+      renderAll();
+      toast(`記下了！${exp.title} ${fmtTWD(exp.twd)}`);
+      formApi.split && formApi.split.focusAmount();
+    }
+  });
+  host.replaceChildren(formApi.split.el);
+}
+$('#splitFormHost').addEventListener('click', e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.go) go(b.dataset.go);
+  if (b.dataset.act === 'sample') loadSample();
+});
+
+/* =========================================================
+   畫面：分帳本 → 明細
+   ========================================================= */
+function renderSplitList() {
+  $('#splitListArt').innerHTML = splitListArtSVG();
+  $('#splitListTotal').textContent = fmtTWD(sum(trip.expenses, e => e.twd));
+  $('#splitListCount').innerHTML = `${trip.expenses.length} 筆<br>${trip.members.length} 位成員`;
+  const host = $('#splitListHost');
+  if (!trip.expenses.length) {
+    host.innerHTML = trip.members.length < 2
+      ? emptyCard('先到設定新增至少 2 位成員，再開始分帳。', '去新增成員', 'settings')
+      : emptyCard('分帳本還是空的。可以直接記一筆，或從記帳本挑幾筆放進來。', '去記一筆', 'split-add');
+    return;
+  }
+  let html = '';
+  for (const [date, list] of groupByDate(trip.expenses)) {
+    html += `<div class="day-head"><b>${dayLabel(date)}</b><span class="num">小計 ${fmtTWD(sum(list, e => e.twd))}</span></div>`;
+    for (const e of list) {
+      html += `<div class="exp" role="button" tabindex="0" data-split="${e.id}" aria-label="編輯 ${esc(e.title)}">
+        <div class="cat-ico" style="background:${CAT_COLOR[e.category]}33">${catSVG(e.category)}</div>
+        <div style="min-width:0">
+          <div class="exp-title">${esc(e.title)}</div>
+          <div class="exp-meta">${e.ledgerId ? '<span class="badge split-src">來自記帳本</span> ' : ''}${esc(memberName(e.payerId))} 付 · ${e.participantIds.length} 人分${e.participantIds.length < trip.members.length ? '（' + e.participantIds.map(memberName).map(esc).join('、') + '）' : ''}</div>
+        </div>
+        <div class="exp-amt num"><div class="tw">${fmtTWD(e.twd)}</div>${e.currency !== 'TWD' ? `<div class="fx">${esc(fmtFx(e.amount, e.currency))}</div>` : ''}</div>
+        <button class="icon-btn" data-del="${e.id}" aria-label="從分帳本刪除 ${esc(e.title)}">${ICON.trash}</button>
+      </div>`;
+    }
+  }
+  host.innerHTML = html;
+}
+$('#splitListHost').addEventListener('click', e => {
+  const del = e.target.closest('[data-del]'); if (del) { deleteSplit(del.dataset.del); return; }
+  const go2 = e.target.closest('[data-go]'); if (go2) { go(go2.dataset.go); return; }
+  const card = e.target.closest('[data-split]'); if (card) openSplitEdit(card.dataset.split);
+});
+$('#splitListHost').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && e.target.matches('[data-split]')) { e.preventDefault(); openSplitEdit(e.target.dataset.split); }
+});
+
+async function deleteSplit(id) {
+  const exp = findSplit(id); if (!exp) return;
+  const ok = await confirmDialog({
+    title: '從分帳本刪除？',
+    message: `「${exp.title}」${fmtFx(exp.amount, exp.currency)}（${fmtTWD(exp.twd)}）會從分帳本刪除，結算會重新計算。${exp.ledgerId ? '\n記帳本裡的這筆會保留。' : ''}`,
+    ok: '刪除', danger: true
+  });
+  if (!ok) return;
+  if (exp.ledgerId) { const r = findLedger(exp.ledgerId); if (r) r.splitId = null; }
+  trip.expenses = trip.expenses.filter(e => e.id !== id);
+  saveTrip(); renderAll(); toast('已從分帳本刪除');
 }
 
+function openSplitEdit(id) {
+  const exp = findSplit(id); if (!exp) return;
+  const d = {
+    mode: 'split', date: exp.date, title: exp.title, category: exp.category,
+    amount: String(exp.amount), currency: exp.currency, rate: String(exp.rate), rateTouched: true,
+    payerId: exp.payerId, participantIds: exp.participantIds.slice(), participantsTouched: true
+  };
+  syncDraft(d);
+  const modal = openModal('sheet', `
+    <div class="grab"></div>
+    <div class="sheet-head"><h2>編輯分帳帳目</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    ${exp.ledgerId ? '<p class="tiny muted" style="margin:0 0 10px">這筆來自記帳本，改金額或內容會一起更新記帳本。</p>' : ''}
+    <div data-form></div>
+    <div style="margin-top:12px;text-align:center"><button class="btn danger small" data-del>${ICON.trash}從分帳本刪除</button></div>`);
+  const api = buildExpenseForm(d, {
+    submitLabel: '儲存修改',
+    onSubmit(f) {
+      Object.assign(exp, pickMoney(f), { payerId: f.payerId, participantIds: f.participantIds });
+      const r = exp.ledgerId && findLedger(exp.ledgerId);
+      if (r) Object.assign(r, pickMoney(f));
+      saveTrip(); modal.close(); renderAll(); toast('已更新');
+    }
+  });
+  $('[data-form]', modal.box).appendChild(api.el);
+  $('[data-del]', modal.box).addEventListener('click', async () => { modal.close(); await deleteSplit(id); });
+}
+
+/* =========================================================
+   畫面：分帳本 → 結算
+   ========================================================= */
 function settlementText() {
   const { transfers, total } = computeSettlement();
-  const lines = [`【旅帳本】${trip.tripName} 結算`, `總花費 ${fmtTWD(total)}，共 ${trip.expenses.length} 筆`, ''];
+  const lines = [`【旅帳本】${trip.tripName} 分帳結算`, `共同花費 ${fmtTWD(total)}，共 ${trip.expenses.length} 筆`, ''];
   if (!transfers.length) lines.push('大家都已經平衡，不用轉帳！');
   for (const t of transfers) lines.push(`${memberName(t.from)} → ${memberName(t.to)}：${fmtTWD(t.amount)}`);
   lines.push('', '（金額四捨五入到台幣整數，總和可能差 1 元）');
   return lines.join('\n');
 }
-
 function renderSettle() {
-  $('#settleArt').innerHTML = fixNestedFaces(settleArtSVG());
+  $('#settleArt').innerHTML = settleArtSVG();
   const host = $('#settleMain');
   $('#settleSide').innerHTML = '';
   if (trip.members.length < 2 || !trip.expenses.length) {
     host.innerHTML = `<div class="card empty">
-      <p>${trip.members.length < 2 ? '先新增至少 2 位成員，' : ''}記下第一筆花費後，這裡會算出誰該給誰多少錢。</p>
-      <button class="btn primary" data-go="${trip.members.length < 2 ? 'settings' : 'add'}">${trip.members.length < 2 ? '去新增成員' : '去記一筆'}</button></div>`;
+      <p>${trip.members.length < 2 ? '先新增至少 2 位成員，' : ''}分帳本有帳目後，這裡會算出誰該給誰多少錢。</p>
+      <button class="btn primary" data-go="${trip.members.length < 2 ? 'settings' : 'split-add'}">${trip.members.length < 2 ? '去新增成員' : '去記一筆'}</button></div>`;
     return;
   }
   const { rows, transfers, total } = computeSettlement();
   const netCls = n => Math.abs(n) < 0.5 ? 'zero' : n > 0 ? 'pos' : 'neg';
   const netTxt = n => Math.abs(n) < 0.5 ? '0' : (n > 0 ? '+' : '−') + fmtInt(Math.abs(n));
-
-  // 類別統計
-  const byCat = CATEGORIES.map(c => ({ cat: c, color: CAT_COLOR[c], value: trip.expenses.filter(e => e.category === c).reduce((s, e) => s + e.twd, 0) })).filter(p => p.value > 0).sort((a, b) => b.value - a.value);
-
   $('#settleSide').innerHTML = `
     <div class="card tint-green">
       <h2>誰該給誰</h2>
       ${transfers.length ? transfers.map(t => {
         const from = trip.members.find(m => m.id === t.from), to = trip.members.find(m => m.id === t.to);
-        return `<div class="transfer">
-          ${faceSVG(from)}${ICON.arrow}${faceSVG(to)}
+        return `<div class="transfer">${faceSVG(from)}${ICON.arrow}${faceSVG(to)}
           <div class="amt num">${fmtTWD(t.amount)}</div>
-          <div class="names"><b style="font-weight:400">${esc(from.name)}</b> 轉給 <b style="font-weight:400">${esc(to.name)}</b></div>
-        </div>`;
+          <div class="names">${esc(from.name)} 轉給 ${esc(to.name)}</div></div>`;
       }).join('') : `<div class="done-msg">${faceSVG({ color: 3 })}<div>大家都平衡了，不用轉帳！</div></div>`}
       <p class="tiny muted" style="margin:10px 0 12px">因四捨五入，總和可能差 1 元。共 ${transfers.length} 筆轉帳，${trip.members.length} 個人最多只需要 ${trip.members.length - 1} 筆。</p>
       <button class="btn primary" style="width:100%" data-act="copy">${ICON.copy}複製結算結果（貼到 LINE）</button>
@@ -1331,23 +1771,13 @@ function renderSettle() {
       </div>
       <p class="tiny muted" style="margin:10px 0 0">淨額 = 已付 − 應付。正數（綠）代表別人欠他，負數（紅）代表他要付給別人。單位：台幣。</p>
     </div>
-
-    <div class="card">
-      <h2>花在哪裡</h2>
-      <div class="donut-wrap">
-        ${donutSVG(byCat, total)}
-        <ul class="legend num">
-          ${byCat.map(p => `<li><span class="sw" style="background:${p.color}"></span><span>${p.cat} ${fmtTWD(p.value)}</span><span class="pct">${Math.round(p.value / total * 100)}%</span></li>`).join('')}
-        </ul>
-      </div>
-    </div>`;
+    ${categoryCard(trip.expenses, '共同花費花在哪裡')}`;
 }
 $('#settleHost').addEventListener('click', async e => {
   const b = e.target.closest('button'); if (!b) return;
   if (b.dataset.go) go(b.dataset.go);
   if (b.dataset.act === 'copy') toast(await copyText(settlementText()) ? '已複製，可以貼到 LINE 了' : '複製失敗，請手動選取');
 });
-
 async function copyText(text) {
   try { await navigator.clipboard.writeText(text); return true; }
   catch (e) {
@@ -1362,11 +1792,11 @@ async function copyText(text) {
 /* =========================================================
    畫面：設定
    ========================================================= */
-function renderSettingsFaces() {
-  $('#settingsFaces').innerHTML = trip.members.slice(0, 3).map((m, i) =>
-    `<svg x="${i * 18 - 20}" y="${i % 2 ? 4 : -6}" width="34" height="34" viewBox="0 0 40 40">${faceSVG(m, '').replace(/^<svg[^>]*>|<\/svg>$/g, '')}</svg>`).join('');
+function pageBase() { return location.href.split(/[?#]/)[0]; }
+function shortcutTemplate() {
+  const base = /^https?:/.test(location.protocol) ? pageBase() : 'https://isa92824.github.io/AI-class-ccu/';
+  return `${base}?source=applepay&amount=[金額]&title=[商家]`;
 }
-
 function rateListHTML() {
   return CURRENCIES.filter(c => c.code !== 'TWD').map(c => {
     const r = getRate(c.code), manual = trip.rateOverrides[c.code] > 0;
@@ -1375,9 +1805,8 @@ function rateListHTML() {
       ${manual ? `<button class="btn small mizu" data-auto="${c.code}">恢復</button>` : `<button class="btn small" data-manual="${c.code}">調整</button>`}</li>`;
   }).join('');
 }
-
 function renderSettings() {
-  renderSettingsFaces();
+  $('#settingsFaces').innerHTML = trip.members.slice(0, 3).map((m, i) => faceAt(m, i * 18 - 20, i % 2 ? 4 : -6, 34)).join('');
   const used = new Set(trip.expenses.flatMap(e => [e.payerId, ...e.participantIds]));
   $('#settingsSide').innerHTML = `
     <div class="card">
@@ -1388,23 +1817,23 @@ function renderSettings() {
     </div>
 
     <div class="card">
-      <h2>成員 <span class="muted tiny">${trip.members.length} / 8 人</span></h2>
+      <h2>分帳成員 <span class="muted tiny">${trip.members.length} / 8 人</span></h2>
       <div id="memberList">
         ${trip.members.map(m => `<div class="member-row">${faceSVG(m)}
           <input class="input grow" data-rename="${m.id}" value="${esc(m.name)}" maxlength="12" aria-label="${esc(m.name)} 的名字">
-          <button class="icon-btn" data-remove="${m.id}" aria-label="刪除 ${esc(m.name)}" ${used.has(m.id) ? 'aria-disabled="true" title="已出現在帳目中"' : ''} style="${used.has(m.id) ? 'opacity:.4' : ''}">${ICON.trash}</button></div>`).join('') || '<p class="muted" style="margin:0">還沒有成員，從下面開始新增吧。</p>'}
+          <button class="icon-btn" data-remove="${m.id}" aria-label="刪除 ${esc(m.name)}" ${used.has(m.id) ? 'aria-disabled="true" title="已出現在分帳本中"' : ''} style="${used.has(m.id) ? 'opacity:.4' : ''}">${ICON.trash}</button></div>`).join('') || '<p class="muted" style="margin:0">還沒有成員，從下面開始新增吧。</p>'}
       </div>
       ${trip.members.length < 8 ? `<form class="row" id="addMember" style="margin-top:14px">
         <input class="input grow" name="name" maxlength="12" placeholder="成員名字，例如：小安" autocomplete="off">
         <button class="btn green" type="submit">新增</button></form>` : '<p class="tiny muted">最多 8 位成員。</p>'}
-      <p class="tiny muted" style="margin:10px 0 0">已經出現在帳目中的成員不能刪除，要先刪掉相關帳目；改名不影響帳目。</p>
-    </div>
-
-    <div class="card tint-yellow">
-      <h2>Apple Pay 自動帶入</h2>
-      <div class="field"><label class="label" for="meSel">我是（這台手機的主人，自動帶入時當付款人）</label>
-        <select class="input" id="meSel"><option value="">（還沒設定）</option>${trip.members.map(m => `<option value="${m.id}" ${m.id === meId() ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></div>
-      <p class="tiny" style="margin:12px 0 6px">用 iPhone「捷徑」App 設定一次，之後每次刷 Apple Pay，手機就會打開旅帳本並填好金額和店名：</p>
+      ${trip.members.length ? `<div class="field" style="margin-top:14px"><label class="label" for="meSel">我是（記帳本放進分帳本時，預設由我付款）</label>
+        <select class="input" id="meSel"><option value="">（還沒設定）</option>${trip.members.map(m => `<option value="${m.id}" ${m.id === meId() ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></div>` : ''}
+      <p class="tiny muted" style="margin:10px 0 0">已經出現在分帳本中的成員不能刪除，要先刪掉相關帳目；改名不影響帳目。記帳本不需要成員也能用。</p>
+    </div>`;
+  $('#settingsMain').innerHTML = `
+    <div class="card tint-yellow" id="applepayCard">
+      <h2>記帳本：Apple Pay 自動帶入</h2>
+      <p class="tiny" style="margin:0 0 6px">用 iPhone「捷徑」App 設定一次，之後每次刷 Apple Pay，手機就會打開旅帳本的記帳本，填好金額和店名：</p>
       <ol class="steps tiny">
         <li>打開「捷徑」→ 下方「自動化」→ 右上「＋」→ 選「交易」（iOS 17 以上）。</li>
         <li>選要觸發的卡片，選「立即執行」→「下一步」→「新增空白自動化」。</li>
@@ -1412,26 +1841,19 @@ function renderSettings() {
         <li>加「URL」動作，貼上下面的網址範本，把 <b>[金額]</b>、<b>[商家]</b> 換成上一步兩個「URL 編碼」的結果。</li>
         <li>加「打開 URL」動作，完成。</li>
       </ol>
-      <div class="url-box num" id="shortcutUrl">${esc(shortcutTemplate())}</div>
+      <div class="url-box num">${esc(shortcutTemplate())}</div>
       <div class="row" style="flex-wrap:wrap;margin-top:10px">
         <button class="btn small" data-act="copy-url">${ICON.copy}複製網址範本</button>
         <button class="btn small mizu" data-act="test-url">用範例試試</button>
       </div>
-      <p class="tiny muted" style="margin:10px 0 0">只有實體感應的 Apple Pay 會觸發；LINE Pay、網路刷卡請回國後匯入帳單，現金照常手動記。</p>
-    </div>`;
-  $('#settingsMain').innerHTML = `
+      <p class="tiny muted" style="margin:10px 0 0">只有實體感應的 Apple Pay 會觸發；LINE Pay、網路刷卡請回國後在記帳本匯入帳單，現金照常手動記。iPhone 上請用 Safari 開這個網頁，資料才會在同一個地方。</p>
+    </div>
 
     <div class="card tint-mizu">
       <h2>匯率（1 外幣 = ? 台幣）</h2>
       <div id="setRateStatus">${rateStatusHTML()}</div>
       <ul class="rate-list" id="rateList">${rateListHTML()}</ul>
       <button class="btn small" style="margin-top:10px" data-act="refresh" ${rateState.refreshing ? 'disabled' : ''}>${ICON.refresh}重新抓取</button>
-    </div>
-
-    <div class="card">
-      <h2>匯入信用卡／行動支付帳單</h2>
-      <p class="tiny muted" style="margin:0 0 12px">支援 CSV 和 Excel（.xlsx／.xls）。從網銀或支付 App 下載帳單，選擇檔案後會自動找出日期、說明和台幣金額欄位，再勾選這趟旅行的消費加進來。帳上是實際扣款的台幣，不用再換匯率。</p>
-      <button class="btn mizu" data-act="import-bill">選擇帳單檔案</button>
     </div>
 
     <div class="card">
@@ -1442,8 +1864,7 @@ function renderSettings() {
         <button class="btn" data-act="sample">載入範例資料</button>
         <button class="btn danger" data-act="clear">清除全部資料</button>
       </div>
-      <input type="file" accept="application/json,.json" id="importFile" hidden>
-      <p class="tiny muted" style="margin:10px 0 0">資料只存在這台裝置的瀏覽器。換手機或清除瀏覽紀錄前，記得先匯出備份。</p>
+      <p class="tiny muted" style="margin:10px 0 0">記帳本和分帳本都存在這台裝置的瀏覽器。換手機或清除瀏覽紀錄前，記得先匯出備份。</p>
     </div>`;
 }
 
@@ -1451,20 +1872,21 @@ const settingsHost = $('#settingsHost');
 settingsHost.addEventListener('input', e => {
   if (e.target.id === 'tripName') {
     trip.tripName = e.target.value.trim() || '我的旅程';
-    saveTrip(); renderHero();
+    saveTrip(); renderTripName();
   }
 });
 settingsHost.addEventListener('change', e => {
   const t = e.target;
   if (t.id === 'defCur') {
     trip.defaultCurrency = t.value; saveTrip();
-    addDraft.currency = t.value; addDraft.rateTouched = false; addDraft.rate = '';
-    renderAdd(); renderRateCard();
+    for (const k of ['ledger', 'split']) { drafts[k].currency = t.value; drafts[k].rateTouched = false; drafts[k].rate = ''; }
+    renderLedgerAdd(); renderSplitAdd(); renderRates();
     toast(`預設幣別改為 ${t.value}`);
   }
   if (t.id === 'meSel') {
     trip.me = t.value || null; saveTrip();
-    if (trip.me && !addFormApi?.touched) { addDraft.payerId = trip.me; renderAdd(); }
+    if (trip.me) { drafts.ledger.payerId = trip.me; drafts.split.payerId = trip.me; }
+    renderLedgerAdd(); renderSplitAdd(); renderLedgerStats();
     toast(trip.me ? `好的，你是 ${memberName(trip.me)}` : '已取消設定');
   }
   if (t.dataset.rename) {
@@ -1480,8 +1902,7 @@ settingsHost.addEventListener('change', e => {
 settingsHost.addEventListener('submit', e => {
   if (e.target.id !== 'addMember') return;
   e.preventDefault();
-  const input = e.target.elements.name;
-  const name = input.value.trim();
+  const name = e.target.elements.name.value.trim();
   if (!name) { toast('請輸入名字'); return; }
   if (trip.members.length >= 8) { toast('最多 8 位成員'); return; }
   if (trip.members.some(m => m.name === name)) { toast('已經有同名的成員'); return; }
@@ -1499,10 +1920,11 @@ settingsHost.addEventListener('click', async e => {
   if (b.dataset.remove) {
     const m = trip.members.find(x => x.id === b.dataset.remove); if (!m) return;
     if (trip.expenses.some(x => x.payerId === m.id || x.participantIds.includes(m.id))) {
-      toast(`${m.name} 已出現在帳目中，請先刪掉相關帳目`); return;
+      toast(`${m.name} 已出現在分帳本中，請先刪掉相關帳目`); return;
     }
     if (!await confirmDialog({ title: `刪除 ${m.name}？`, message: '這位成員會從名單中移除。', ok: '刪除', danger: true })) return;
     trip.members = trip.members.filter(x => x.id !== m.id);
+    if (trip.me === m.id) trip.me = null;
     saveTrip(); renderAll(); toast('已刪除成員');
   }
   if (b.dataset.manual) editRateOverride(b.dataset.manual);
@@ -1515,9 +1937,7 @@ settingsHost.addEventListener('click', async e => {
   if (b.dataset.act === 'copy-url') toast(await copyText(shortcutTemplate()) ? '已複製網址範本' : '複製失敗，請手動選取');
   if (b.dataset.act === 'test-url') location.href = pageBase() + '?source=applepay&amount=' + encodeURIComponent('¥1,280') + '&title=' + encodeURIComponent('LAWSON 新宿三丁目店');
 });
-settingsHost.addEventListener('change', e => {
-  if (e.target.id === 'importFile' && e.target.files[0]) importJSON(e.target.files[0]);
-});
+$('#importFile').addEventListener('change', e => { const f = e.target.files[0]; e.target.value = ''; if (f) importJSON(f); });
 
 function exportJSON() {
   const blob = new Blob([JSON.stringify(trip, null, 2)], { type: 'application/json' });
@@ -1535,50 +1955,48 @@ function importJSON(file) {
       const data = JSON.parse(reader.result);
       if (!data || !Array.isArray(data.members) || !Array.isArray(data.expenses)) throw new Error('format');
       const t = normalizeTrip(data);
-      const ok = await confirmDialog({ title: '匯入備份？', message: `「${t.tripName}」：${t.members.length} 位成員、${t.expenses.length} 筆帳目。\n目前的資料會被覆蓋。`, ok: '匯入' });
+      const ok = await confirmDialog({ title: '匯入備份？', message: `「${t.tripName}」：${t.members.length} 位成員、記帳本 ${t.ledger.length} 筆、分帳本 ${t.expenses.length} 筆。\n目前的資料會被覆蓋。`, ok: '匯入' });
       if (!ok) return;
-      trip = t; addDraft = newDraft(); saveTrip(); renderAll(); toast('匯入完成');
+      trip = t; resetDrafts(); saveTrip(); renderAll(); toast('匯入完成');
     } catch (err) { toast('這不是旅帳本的備份檔'); }
-    finally { const f = $('#importFile'); if (f) f.value = ''; }
   };
   reader.readAsText(file);
 }
 async function clearAll() {
-  if (!await confirmDialog({ title: '清除全部資料？', message: '旅程名稱、成員和所有帳目都會刪掉。', ok: '繼續', danger: true })) return;
+  if (!await confirmDialog({ title: '清除全部資料？', message: '旅程名稱、成員、記帳本和分帳本都會刪掉。', ok: '繼續', danger: true })) return;
   if (!await confirmDialog({ title: '真的要清除嗎？', message: '清除後無法復原。建議先「匯出 JSON」備份。', ok: '確定清除', danger: true })) return;
   try { localStorage.removeItem(LS_TRIP); } catch (e) { }
-  trip = emptyTrip(); addDraft = newDraft(); renderAll();
+  trip = emptyTrip(); resetDrafts(); renderAll();
   toast('已清除，重新開始吧');
 }
 async function loadSample() {
-  if (trip.members.length || trip.expenses.length) {
+  if (trip.members.length || trip.expenses.length || trip.ledger.length) {
     if (!await confirmDialog({ title: '載入範例資料？', message: '目前的旅程會被範例覆蓋。', ok: '載入' })) return;
   }
-  const t = todayStr(), y = (() => { const d = new Date(); d.setDate(d.getDate() - 1); return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`; })();
+  const t = todayStr(), yd = new Date(); yd.setDate(yd.getDate() - 1); const y = ymd(yd);
+  const jpy = (amount, rate = 0.198) => ({ amount, currency: 'JPY', rate, twd: round2(amount * rate) });
   trip = normalizeTrip({
-    tripName: '2026 東京五天四夜', defaultCurrency: 'JPY',
+    tripName: '2026 東京五天四夜', defaultCurrency: 'JPY', me: 'm1',
     members: [{ id: 'm1', name: '小安', color: 0 }, { id: 'm2', name: '小白', color: 1 }, { id: 'm3', name: '小陳', color: 2 }],
+    ledger: [
+      { id: 'l1', date: y, title: '燒肉晚餐', category: '餐飲', ...jpy(9000), method: '信用卡', splitId: 'e1' },
+      { id: 'l2', date: y, title: 'LAWSON 早餐', category: '餐飲', ...jpy(680), method: 'Apple Pay', splitId: null },
+      { id: 'l3', date: t, title: '地鐵一日券', category: '交通', ...jpy(800), method: '現金', splitId: null },
+      { id: 'l4', date: t, title: '藥妝店', category: '購物', ...jpy(5200), method: '信用卡', splitId: null }
+    ],
     expenses: [
-      { id: 'e1', date: y, title: '燒肉晚餐', category: '餐飲', amount: 9000, currency: 'JPY', rate: 0.198, twd: 1782, payerId: 'm1', participantIds: ['m1', 'm2', 'm3'] },
-      { id: 'e2', date: t, title: '新幹線車票', category: '交通', amount: 6000, currency: 'JPY', rate: 0.198, twd: 1188, payerId: 'm2', participantIds: ['m1', 'm2'] },
-      { id: 'e3', date: t, title: '美術館門票', category: '門票', amount: 3000, currency: 'JPY', rate: 0.198, twd: 594, payerId: 'm3', participantIds: ['m1', 'm2', 'm3'] }
+      { id: 'e1', date: y, title: '燒肉晚餐', category: '餐飲', ...jpy(9000), payerId: 'm1', participantIds: ['m1', 'm2', 'm3'], ledgerId: 'l1' },
+      { id: 'e2', date: t, title: '新幹線車票', category: '交通', ...jpy(6000), payerId: 'm2', participantIds: ['m1', 'm2'] },
+      { id: 'e3', date: t, title: '美術館門票', category: '門票', ...jpy(3000), payerId: 'm3', participantIds: ['m1', 'm2', 'm3'] }
     ]
   });
-  addDraft = newDraft(); saveTrip(); renderAll();
+  resetDrafts(); saveTrip(); renderAll();
   toast('已載入範例：三人東京行');
 }
 
 /* =========================================================
-   我是誰、Apple Pay 捷徑帶入
+   Apple Pay 捷徑帶入（只進記帳本）
    ========================================================= */
-function meId() { return trip.members.some(m => m.id === trip.me) ? trip.me : null; }
-function pageBase() { return location.href.split(/[?#]/)[0]; }
-function shortcutTemplate() {
-  const base = /^https?:/.test(location.protocol) ? pageBase() : 'https://isa92824.github.io/AI-class-ccu/';
-  return `${base}?source=applepay&amount=[金額]&title=[商家]`;
-}
-
-// 依店名猜類別（猜不到就回傳空字串）
 const CAT_RULES = [
   ['交通', /\bJR\b|鐵道|鉄道|電鉄|新幹線|地鐵|地下鉄|metro|subway|suica|pasmo|icoca|\bbus\b|巴士|バス|taxi|計程車|タクシー|uber|grab|航空|airline|airport|機場|高鐵|台鐵|捷運|parking|停車|railway|train/i],
   ['住宿', /hotel|飯店|酒店|旅館|ホテル|\binn\b|hostel|booking\.com|agoda|airbnb|民宿|resort|旅店/i],
@@ -1590,8 +2008,6 @@ function guessCategory(text) {
   for (const [cat, re] of CAT_RULES) if (re.test(text || '')) return cat;
   return '';
 }
-
-// 解析「¥1,280」「NT$350」「1280 JPY」這類金額字串
 function parseMoney(str) {
   const s = String(str || '').trim(); if (!s) return null;
   const up = s.toUpperCase();
@@ -1619,37 +2035,33 @@ function parseMoney(str) {
   const amount = Number(num);
   return { amount: Number.isFinite(amount) ? amount : NaN, currency };
 }
-
-let prefillInfo = null;
-// 網址帶參數打開時（例如捷徑），預先填好記帳表單；按「新增這筆」才會真的存
 function applyUrlPrefill() {
   const q = new URLSearchParams(location.search);
   if (!q.has('amount')) return;
   const money = parseMoney(q.get('amount'));
   const cur = (q.get('currency') || '').toUpperCase();
-  addDraft = newDraft();
-  addDraft.currency = CUR[cur] ? cur : (money && money.currency && CUR[money.currency]) ? money.currency : trip.defaultCurrency;
-  if (money && money.amount > 0) addDraft.amount = String(money.amount);
+  const d = newDraft('ledger');
+  d.currency = CUR[cur] ? cur : (money && money.currency && CUR[money.currency]) ? money.currency : trip.defaultCurrency;
+  if (money && money.amount > 0) d.amount = String(money.amount);
   const title = (q.get('title') || q.get('merchant') || '').trim().slice(0, 40);
-  addDraft.title = title;
+  d.title = title;
   const cat = q.get('category');
-  addDraft.category = CATEGORIES.includes(cat) ? cat : (guessCategory(title) || '其他');
-  const payer = trip.members.find(m => m.name === q.get('payer'));
-  addDraft.payerId = payer ? payer.id : (meId() || addDraft.payerId);
+  d.category = CATEGORIES.includes(cat) ? cat : (guessCategory(title) || '其他');
+  const source = q.get('source') || 'link';
+  d.method = source === 'applepay' ? 'Apple Pay' : (METHODS.includes(q.get('method')) ? q.get('method') : '其他');
   const date = q.get('date');
-  if (/^\d{4}-\d{2}-\d{2}$/.test(date || '')) addDraft.date = date;
-  prefillInfo = { source: q.get('source') || 'link', title, amountText: q.get('amount') };
-  // 把參數從網址拿掉，重新整理才不會又帶入一次
-  history.replaceState(null, '', location.pathname + '#add');
+  if (/^\d{4}-\d{2}-\d{2}$/.test(date || '')) d.date = date;
+  drafts.ledger = d;
+  prefillInfo = { source, title, amountText: q.get('amount') };
+  history.replaceState(null, '', location.pathname + '#ledger-add');
 }
 
 /* =========================================================
-   匯入信用卡／行動支付帳單（CSV、Excel）
+   匯入信用卡／行動支付帳單 → 記帳本
    ========================================================= */
-// 讀文字檔：先試 UTF-8，不行就用 Big5（台灣銀行常見的編碼）
 async function readTextSmart(file) {
   const buf = await file.arrayBuffer();
-  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^\uFEFF/, ''), enc: 'UTF-8' }; }
+  try { return { text: new TextDecoder('utf-8', { fatal: true }).decode(buf).replace(/^﻿/, ''), enc: 'UTF-8' }; }
   catch (e) {
     try { return { text: new TextDecoder('big5').decode(buf), enc: 'Big5' }; }
     catch (_) { return { text: new TextDecoder('utf-8').decode(buf), enc: 'UTF-8' }; }
@@ -1673,7 +2085,6 @@ function parseCSV(text) {
   if (field !== '' || row.length) { row.push(field); rows.push(row); }
   return rows.map(r => r.map(c => c.trim())).filter(r => r.some(c => c !== ''));
 }
-// Excel 用 SheetJS 解析，需要時才從 CDN 載入
 function loadSheetJS() {
   if (window.XLSX) return Promise.resolve(window.XLSX);
   return new Promise((resolve, reject) => {
@@ -1695,7 +2106,6 @@ async function readBillRows(file) {
   const { text, enc } = await readTextSmart(file);
   return { rows: parseCSV(text), enc };
 }
-// 日期：2026/10/14、2026-10-14、115/10/14（民國）、10/14、20261014、1151014
 function parseDateCell(v) {
   let s = String(v || '').trim(); if (!s) return null;
   s = s.split(/[\sT]/)[0].replace(/[年月]/g, '/').replace(/日$/, '');
@@ -1717,7 +2127,6 @@ function parseDateCell(v) {
   if (!(y > 1990 && y < 2100 && m >= 1 && m <= 12 && d >= 1 && d <= 31)) return null;
   return `${y}-${pad(m)}-${pad(d)}`;
 }
-// 金額：去掉 NT$、逗號；(123) 或 -123 視為負數（退款、繳款）
 function parseAmountCell(v) {
   let s = String(v || '').trim(); if (!/\d/.test(s)) return NaN;
   const neg = /^\(.*\)$/.test(s) || /^[-−]|[-−]$/.test(s);
@@ -1725,7 +2134,6 @@ function parseAmountCell(v) {
   const n = Number(s);
   return Number.isFinite(n) && s ? (neg ? -n : n) : NaN;
 }
-// 自動猜哪一欄是日期、說明、台幣金額、外幣金額、幣別
 function guessBillMapping(rows) {
   const KW = {
     date: /消費日|交易日|日期|時間|date/i,
@@ -1740,36 +2148,35 @@ function guessBillMapping(rows) {
   const ncol = Math.max(...rows.map(r => r.length));
   const col = i => data.map(r => r[i] || '');
   const dateScore = i => col(i).filter(v => parseDateCell(v)).length;
-  const numScore = i => col(i).filter(v => Number.isFinite(parseAmountCell(v)) && !parseDateCell(v)).length;  // 日期不算數字
+  const numScore = i => col(i).filter(v => Number.isFinite(parseAmountCell(v)) && !parseDateCell(v)).length;
   const idx = [...Array(ncol).keys()];
   const byHeader = (re, not = [], ok = () => true) => header ? idx.find(i => !not.includes(i) && re.test(header[i] || '') && ok(i)) ?? -1 : -1;
   const half = Math.max(1, data.length / 2);
+  const notDate = i => !header || !KW.date.test(header[i] || '');
   let date = byHeader(KW.date, [], i => dateScore(i) >= half);
   if (date < 0) date = idx.reduce((b, i) => dateScore(i) > (b < 0 ? 0 : dateScore(b)) ? i : b, -1);
   const cur = byHeader(KW.cur, [date], i => numScore(i) < half);
   const fx = byHeader(KW.fx, [date, cur], i => numScore(i) >= half);
-  const notDate = i => !KW.date.test(header[i] || '');
   let twd = byHeader(/新臺幣|新台幣|台幣|臺幣|入帳金額|NT/i, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
   if (twd < 0) twd = byHeader(KW.twd, [date, cur, fx], i => notDate(i) && numScore(i) >= half);
   if (twd < 0) twd = idx.filter(i => ![date, cur, fx].includes(i)).reduce((b, i) => numScore(i) > (b < 0 ? 0 : numScore(b)) ? i : b, -1);
   let desc = byHeader(KW.desc, [date, cur, fx, twd], i => numScore(i) < half);
   if (desc < 0) {
-    const avgLen = i => col(i).reduce((s, v) => s + (Number.isFinite(parseAmountCell(v)) ? 0 : v.length), 0);
-    desc = idx.filter(i => ![date, cur, fx, twd].includes(i)).reduce((b, i) => avgLen(i) > (b < 0 ? 0 : avgLen(b)) ? i : b, -1);
+    const textLen = i => col(i).reduce((s, v) => s + (Number.isFinite(parseAmountCell(v)) ? 0 : v.length), 0);
+    desc = idx.filter(i => ![date, cur, fx, twd].includes(i)).reduce((b, i) => textLen(i) > (b < 0 ? 0 : textLen(b)) ? i : b, -1);
   }
   return { headerIndex: hi, header, ncol, map: { date, desc, twd, fx, cur } };
 }
 
 async function openBillImport(file) {
-  if (trip.members.length < 2) { toast('先到設定新增至少 2 位成員'); go('settings'); return; }
   let parsed;
   try { parsed = await readBillRows(file); }
   catch (e) { toast(e.message === 'sheetjs' ? 'Excel 解析元件載入失敗，請改存成 CSV 再匯入' : '讀不到這個檔案'); return; }
   if (!parsed.rows.length) { toast('檔案裡沒有資料'); return; }
   const g = guessBillMapping(parsed.rows);
-  const dates = trip.expenses.map(e => e.date).sort();
+  const dates = trip.ledger.concat(trip.expenses).map(e => e.date).sort();
   const st = {
-    map: g.map, payerId: meId() || trip.members[0].id, parts: trip.members.map(m => m.id),
+    map: g.map, method: /line/i.test(file.name) ? 'LINE Pay' : '信用卡',
     from: dates[0] || '', to: dates[dates.length - 1] || '', items: [], picked: new Set(), cats: {}
   };
   const dataRows = parsed.rows.slice(g.headerIndex + 1);
@@ -1779,7 +2186,7 @@ async function openBillImport(file) {
 
   const modal = openModal('sheet', `
     <div class="grab"></div>
-    <div class="sheet-head"><h2>匯入帳單</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
+    <div class="sheet-head"><h2>匯入帳單到記帳本</h2><button class="icon-btn" data-close aria-label="關閉">${ICON.close}</button></div>
     <p class="tiny muted" style="margin:0 0 10px">${esc(file.name)} · ${parsed.enc} · ${dataRows.length} 列。欄位是自動判斷的，不對可以改。</p>
     <div class="imp-map">
       <label class="field"><span class="label">日期欄</span><select class="input" data-map="date">${colOptions(st.map.date)}</select></label>
@@ -1788,19 +2195,17 @@ async function openBillImport(file) {
       <label class="field"><span class="label">外幣金額欄（選填）</span><select class="input" data-map="fx">${colOptions(st.map.fx, true)}</select></label>
     </div>
     <div class="imp-opts" style="margin-top:12px">
-      <label class="field"><span class="label">付款人</span><select class="input" data-opt="payer">${trip.members.map(m => `<option value="${m.id}" ${m.id === st.payerId ? 'selected' : ''}>${esc(m.name)}</option>`).join('')}</select></label>
+      <label class="field"><span class="label">付款方式</span><select class="input" data-opt="method">${METHODS.map(m => `<option ${m === st.method ? 'selected' : ''}>${m}</option>`).join('')}</select></label>
       <div class="field span2"><span class="label">旅行日期（範圍內的消費會自動勾選）</span>
         <div class="row"><input class="input" type="date" data-opt="from" value="${st.from}" aria-label="開始日期"><input class="input" type="date" data-opt="to" value="${st.to}" aria-label="結束日期"></div></div>
     </div>
-    <div class="field" style="margin-top:10px"><span class="label">誰要分</span>
-      <div class="chips">${trip.members.map(m => `<button type="button" class="chip part" data-ipart="${m.id}" aria-pressed="true">${faceSVG(m, '')}${esc(m.name)}<span class="tick">✓</span></button>`).join('')}</div></div>
     <div class="imp-head"><span data-count></span><button type="button" class="link-btn" data-act="toggle-all">全選／全不選</button></div>
     <div class="imp-list" data-list></div>
-    <button class="btn primary big" style="margin-top:14px" data-act="do-import"></button>`);
+    <p class="tiny muted" style="margin:10px 2px 0">匯入後到「記帳本 → 明細」按「多選放進分帳本」，挑出要和大家分的。</p>
+    <button class="btn primary big" style="margin-top:12px" data-act="do-import"></button>`);
   const box = modal.box;
-  if (st.map.cur >= 0) st.curCol = st.map.cur;
+  st.curCol = st.map.cur;
 
-  // 依目前的欄位對應，把每一列轉成帳目候選
   function buildItems() {
     st.items = [];
     dataRows.forEach((r, i) => {
@@ -1810,8 +2215,8 @@ async function openBillImport(file) {
       const desc = (r[st.map.desc] || '').replace(/\s+/g, ' ').trim() || '帳單消費';
       const fxAmt = st.map.fx >= 0 ? parseAmountCell(r[st.map.fx]) : NaN;
       const fxCurRaw = st.curCol >= 0 ? (r[st.curCol] || '') : '';
-      const fxCur = (parseMoney(fxCurRaw + ' 1') || {}).currency || (CUR[fxCurRaw.toUpperCase()] ? fxCurRaw.toUpperCase() : null);
-      const dup = trip.expenses.some(e => e.date === date && Math.abs(e.twd - twd) < 1);
+      const fxCur = (parseMoney(fxCurRaw + ' 1') || {}).currency || null;
+      const dup = trip.ledger.some(e => e.date === date && Math.abs(e.twd - twd) < 1);
       st.items.push({ i, date, desc, twd, fxAmt, fxCur, dup });
       if (!(i in st.cats)) st.cats[i] = guessCategory(desc) || '其他';
     });
@@ -1822,59 +2227,47 @@ async function openBillImport(file) {
   }
   function renderList() {
     const list = $('[data-list]', box);
-    if (!st.items.length) {
-      list.innerHTML = `<p class="muted tiny" style="padding:14px;margin:0">找不到有日期和金額的消費，請檢查上面的欄位設定。</p>`;
-    } else {
-      list.innerHTML = st.items.map(it => `<label class="imp-row ${st.picked.has(it.i) ? '' : 'off'}">
+    list.innerHTML = !st.items.length
+      ? `<p class="muted tiny" style="padding:14px;margin:0">找不到有日期和金額的消費，請檢查上面的欄位設定。</p>`
+      : st.items.map(it => `<label class="imp-row ${st.picked.has(it.i) ? '' : 'off'}">
         <input type="checkbox" data-pick="${it.i}" ${st.picked.has(it.i) ? 'checked' : ''}>
         <div style="min-width:0"><div class="desc">${esc(it.desc)}</div><div class="d num">${it.date}${it.fxAmt > 0 ? ' · 外幣 ' + it.fxAmt.toLocaleString('en-US') + (it.fxCur ? ' ' + it.fxCur : '') : ''}</div></div>
         <div class="amt num">${fmtTWD(it.twd)}</div>
         <div class="sub"><select data-icat="${it.i}" aria-label="類別">${CATEGORIES.map(c => `<option ${c === st.cats[it.i] ? 'selected' : ''}>${c}</option>`).join('')}</select>${it.dup ? '<span class="badge warn">可能已記過</span>' : ''}</div>
       </label>`).join('');
-    }
     updateFooter();
   }
   function updateFooter() {
     const chosen = st.items.filter(it => st.picked.has(it.i));
-    const sum = chosen.reduce((s, it) => s + it.twd, 0);
     $('[data-count]', box).textContent = `勾選 ${chosen.length} / ${st.items.length} 筆`;
     const btn = $('[data-act=do-import]', box);
-    btn.textContent = chosen.length ? `加入 ${chosen.length} 筆（${fmtTWD(sum)}）` : '請勾選要加入的消費';
-    btn.disabled = !chosen.length || !st.parts.length;
-    if (!st.parts.length) btn.textContent = '至少選一位分攤成員';
+    btn.textContent = chosen.length ? `加入記帳本 ${chosen.length} 筆（${fmtTWD(sum(chosen, it => it.twd))}）` : '請勾選要加入的消費';
+    btn.disabled = !chosen.length;
   }
-
   box.addEventListener('change', e => {
     const t = e.target;
     if (t.dataset.map) { st.map[t.dataset.map] = +t.value; buildItems(); renderList(); }
-    if (t.dataset.opt === 'payer') st.payerId = t.value;
+    if (t.dataset.opt === 'method') st.method = t.value;
     if (t.dataset.opt === 'from' || t.dataset.opt === 'to') { st[t.dataset.opt] = t.value; autoPick(); renderList(); }
     if (t.dataset.pick) { const i = +t.dataset.pick; t.checked ? st.picked.add(i) : st.picked.delete(i); t.closest('.imp-row').classList.toggle('off', !t.checked); updateFooter(); }
     if (t.dataset.icat) st.cats[+t.dataset.icat] = t.value;
   });
   box.addEventListener('click', e => {
     const b = e.target.closest('button'); if (!b) return;
-    if (b.dataset.ipart) {
-      const id = b.dataset.ipart;
-      st.parts = st.parts.includes(id) ? st.parts.filter(x => x !== id) : trip.members.map(m => m.id).filter(x => x === id || st.parts.includes(x));
-      b.setAttribute('aria-pressed', st.parts.includes(id)); updateFooter();
-    }
-    if (b.dataset.act === 'toggle-all') {
-      st.picked = st.picked.size === st.items.length ? new Set() : new Set(st.items.map(it => it.i)); renderList();
-    }
+    if (b.dataset.act === 'toggle-all') { st.picked = st.picked.size === st.items.length ? new Set() : new Set(st.items.map(it => it.i)); renderList(); }
     if (b.dataset.act === 'do-import') {
       const chosen = st.items.filter(it => st.picked.has(it.i));
       for (const it of chosen) {
         const useFx = it.fxAmt > 0 && it.fxCur && it.fxCur !== 'TWD' && CUR[it.fxCur];
-        trip.expenses.push({
-          id: newExpenseId(), date: it.date, title: it.desc.slice(0, 40), category: st.cats[it.i] || '其他',
+        trip.ledger.push({
+          id: newId('l', trip.ledger), date: it.date, title: it.desc.slice(0, 40), category: st.cats[it.i] || '其他',
           amount: useFx ? it.fxAmt : it.twd, currency: useFx ? it.fxCur : 'TWD',
           rate: useFx ? Number((it.twd / it.fxAmt).toPrecision(6)) : 1,
-          twd: round2(it.twd), payerId: st.payerId, participantIds: st.parts.slice()
+          twd: round2(it.twd), method: st.method, splitId: null
         });
       }
-      saveTrip(); modal.close(); renderAll(); go('list');
-      toast(`已加入 ${chosen.length} 筆帳單消費`);
+      saveTrip(); modal.close(); renderAll(); go('ledger-list');
+      toast(`已加入記帳本 ${chosen.length} 筆`);
     }
   });
   buildItems(); renderList();
@@ -1912,10 +2305,9 @@ function openModal(kind, html) {
   function onKey(e) { if (e.key === 'Escape') close(null); }
   document.addEventListener('keydown', onKey);
   back.addEventListener('click', e => { if (e.target === back || e.target.closest('[data-close]')) close(null); });
-  setTimeout(() => { const f = box.querySelector('input:not([type=date]),button.btn'); f && f.focus({ preventScroll: true }); }, 50);
+  setTimeout(() => { const f = box.querySelector('input:not([type=date]):not([type=checkbox]),button.btn'); f && f.focus({ preventScroll: true }); }, 50);
   return { box, close, set onClose(fn) { onClose = fn; } };
 }
-
 function confirmDialog({ title, message, ok = '確定', cancel = '取消', danger = false }) {
   return new Promise(resolve => {
     const m = openModal('dialog', `<h2>${esc(title)}</h2><p>${esc(message)}</p>
@@ -1924,7 +2316,6 @@ function confirmDialog({ title, message, ok = '確定', cancel = '取消', dange
     $('[data-ok]', m.box).addEventListener('click', () => m.close(true));
   });
 }
-
 function promptDialog({ title, message, value = '', ok = '確定' }) {
   return new Promise(resolve => {
     const m = openModal('dialog', `<h2>${esc(title)}</h2><p>${esc(message)}</p>
@@ -1936,7 +2327,6 @@ function promptDialog({ title, message, value = '', ok = '確定' }) {
     setTimeout(() => input.select(), 60);
   });
 }
-
 let toastTimer = null;
 function toast(msg) {
   const t = $('#toast');
@@ -1946,43 +2336,86 @@ function toast(msg) {
 }
 
 /* =========================================================
-   分頁切換（用網址 #hash，重新整理會停在同一頁）
+   切換：記帳本／分帳本，各自四個分頁（網址 #hash 記住位置）
    ========================================================= */
-const TABS = ['add', 'list', 'settle', 'settings'];
-function go(tab) {
-  if (!TABS.includes(tab)) tab = 'add';
-  if (location.hash !== '#' + tab) history.replaceState(null, '', '#' + tab);
-  showTab(tab);
+const ROUTES = {
+  'ledger-add': { mode: 'ledger', label: '記一筆', icon: 'add' },
+  'ledger-list': { mode: 'ledger', label: '明細', icon: 'list' },
+  'ledger-stats': { mode: 'ledger', label: '統計', icon: 'stats' },
+  'split-add': { mode: 'split', label: '記一筆', icon: 'add' },
+  'split-list': { mode: 'split', label: '明細', icon: 'list' },
+  'split-settle': { mode: 'split', label: '結算', icon: 'settle' },
+  'settings': { mode: null, label: '設定', icon: 'settings' }
+};
+const MODE_TABS = { ledger: ['ledger-add', 'ledger-list', 'ledger-stats', 'settings'], split: ['split-add', 'split-list', 'split-settle', 'settings'] };
+const OLD_ROUTES = { add: 'split-add', list: 'split-list', settle: 'split-settle' };   // 舊版網址
+let mode = 'ledger', route = 'ledger-add';
+const lastRoute = { ledger: 'ledger-add', split: 'split-add' };
+
+function routeFromHash() {
+  const h = location.hash.slice(1);
+  return ROUTES[h] ? h : OLD_ROUTES[h] || 'ledger-add';
 }
-function showTab(tab) {
-  for (const t of TABS) {
-    $('#page-' + t).classList.toggle('active', t === tab);
-    const btn = $('#tab-' + t);
-    if (t === tab) btn.setAttribute('aria-current', 'page'); else btn.removeAttribute('aria-current');
-  }
+function go(r) {
+  if (!ROUTES[r]) r = 'ledger-add';
+  if (location.hash !== '#' + r) history.replaceState(null, '', '#' + r);
+  showRoute(r);
+}
+function showRoute(r) {
+  route = r;
+  if (ROUTES[r].mode) { mode = ROUTES[r].mode; lastRoute[mode] = r; }
+  $('#tabbar').innerHTML = MODE_TABS[mode].map(x => `<button class="tab" data-route="${x}" ${x === r ? 'aria-current="page"' : ''}>${TAB_ICON[ROUTES[x].icon]}${ROUTES[x].label}</button>`).join('');
+  $$('.mode-btn').forEach(b => b.setAttribute('aria-pressed', b.dataset.mode === mode));
+  $$('.page').forEach(p => p.classList.toggle('active', p.id === 'page-' + r));
+  renderTopTotal();
+  if (r !== 'ledger-list' && selecting) { selecting = false; picked.clear(); renderLedgerList(); }
+  renderBulkBar();
   window.scrollTo({ top: 0 });
 }
-document.querySelector('.tabbar').addEventListener('click', e => {
-  const b = e.target.closest('[data-tab]'); if (b) go(b.dataset.tab);
+function renderTopTotal() {
+  const ledger = mode === 'ledger';
+  $('#topLabel').textContent = ledger ? '我的花費' : '共同花費';
+  $('#topTotal').textContent = fmtTWD(ledger ? sum(trip.ledger, e => e.twd) : sum(trip.expenses, e => e.twd));
+}
+$('#tabbar').addEventListener('click', e => { const b = e.target.closest('[data-route]'); if (b) go(b.dataset.route); });
+$('.mode-switch').addEventListener('click', e => {
+  const b = e.target.closest('[data-mode]'); if (!b) return;
+  go(b.dataset.mode === mode && route !== 'settings' ? MODE_TABS[mode][0] : lastRoute[b.dataset.mode]);
 });
-window.addEventListener('hashchange', () => showTab(TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'add'));
+window.addEventListener('hashchange', () => showRoute(routeFromHash()));
+// 其他地方的「去某頁」按鈕
+document.addEventListener('click', e => {
+  const b = e.target.closest('[data-go]');
+  if (!b || b.closest('#ledgerListHost,#splitListHost,#splitFormHost,#settleHost,#statsMain')) return;
+  go(b.dataset.go);
+  if (b.dataset.scroll) setTimeout(() => { const t = document.getElementById(b.dataset.scroll); t && t.scrollIntoView({ block: 'start' }); }, 60);
+});
 
 /* =========================================================
    重新繪製
    ========================================================= */
+function renderTripName() {
+  $$('[data-trip-name]').forEach(el => el.textContent = trip.tripName);
+  document.title = `${trip.tripName}｜旅帳本 TripSplit`;
+}
 function renderRates() {
-  renderRateCard();
+  renderRateCard('ledger'); renderRateCard('split');
   const st = $('#setRateStatus'); if (st) st.innerHTML = rateStatusHTML();
   const list = $('#rateList'); if (list) list.innerHTML = rateListHTML();
   const rb = settingsHost.querySelector('[data-act=refresh]'); if (rb) rb.disabled = !!rateState.refreshing;
 }
+function resetDrafts() { drafts.ledger = newDraft('ledger'); drafts.split = newDraft('split'); prefillInfo = null; selecting = false; picked.clear(); }
 function renderAll() {
-  renderHero();
-  renderAdd();
-  renderRateCard();
-  renderList();
+  renderTripName();
+  renderLedgerAdd();
+  renderLedgerList();
+  renderLedgerStats();
+  renderSplitAdd();
+  renderSplitList();
   renderSettle();
   renderSettings();
+  renderRates();
+  renderTopTotal();
 }
 
 /* =========================================================
@@ -1990,11 +2423,11 @@ function renderAll() {
    ========================================================= */
 const cached = readRatesCache();
 if (cached) rateState = { status: 'cache', perTwd: cached.perTwd, source: cached.source, dataTime: cached.dataTime, fetchedAt: cached.fetchedAt, refreshing: true };
+resetDrafts();
 applyUrlPrefill();
 renderAll();
-showTab(prefillInfo ? 'add' : TABS.includes(location.hash.slice(1)) ? location.hash.slice(1) : 'add');
-// 從 Apple Pay 打開時，直接捲到記帳表單
-if (prefillInfo) setTimeout(() => $('#addCard').scrollIntoView({ block: 'start' }), 80);
+showRoute(prefillInfo ? 'ledger-add' : routeFromHash());
+if (prefillInfo) setTimeout(() => $('#ledgerFormHost').scrollIntoView({ block: 'start' }), 80);
 if (storageProblem) toast(storageProblem);
 loadRates(false);
 
